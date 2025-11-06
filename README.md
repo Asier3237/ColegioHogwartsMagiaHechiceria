@@ -44,10 +44,10 @@ Algoritmo interno de asignación (no aleatorio puro).
 📌 Si el usuario no indica preferencias, se asigna una casa aleatoriamente.
 
 📅 Estado del Sprint
-✅ Base de datos creada y funcional.
+✅ Base de datos en proceso.
 
-✅ Login y registro implementados.
+✅ Login y registro en proceso.
 
-✅ Sombrero seleccionador operativo.
+✅ Sombrero seleccionador en proceso.
 
 🔜 Próximo sprint: interfaz gráfica, lógica de hechizos y pociones, y conexión con servidor.
