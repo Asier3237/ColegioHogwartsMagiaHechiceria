@@ -10,7 +10,7 @@ interface UserAPI {
     @GET("usuario/listado")
     suspend fun getUsuarios(): Response<List<Usuario>>
 
-    @GET("usuario/listado/{id}")
+    @GET("usuario/{id}")
     suspend fun getUsuario(@Path("id") id: Int): Response<Usuario>
 
     @POST("usuario/registrar")
