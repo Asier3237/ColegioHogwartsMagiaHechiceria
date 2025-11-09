@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "HogwartsAsierMartinez"
-include(":app")
+include(":android:app")
+
  
