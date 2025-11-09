@@ -46,4 +46,18 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("io.ktor:ktor-server-core:2.3.4")
+    implementation("io.ktor:ktor-server-netty:2.3.4")
+    implementation("io.ktor:ktor-server-content-negotiation:2.3.4")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
+    implementation("io.ktor:ktor-server-call-logging:2.3.4")
+    implementation("mysql:mysql-connector-java:8.0.33")
+
+
+    // Retrofit
+    //implementation(libs.retrofit)
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    //implementation(libs.converter.gson)
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 }
