@@ -6,9 +6,11 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.routing.*
-import rutas.rutas_usuario
+import routes.rutas_usuario
 
 fun main() {
+    println("🚀 Iniciando módulo Ktor...")
+
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
         install(ContentNegotiation) { json() }
         routing {

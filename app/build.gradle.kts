@@ -35,6 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -53,6 +56,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
     implementation("io.ktor:ktor-server-call-logging:2.3.4")
     implementation("mysql:mysql-connector-java:8.0.33")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
 
 
     // Retrofit

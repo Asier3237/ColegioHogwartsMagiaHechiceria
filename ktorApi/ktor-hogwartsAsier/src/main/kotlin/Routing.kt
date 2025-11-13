@@ -4,7 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import rutas.rutas_usuario
+import routes.rutas_usuario
 
 fun Application.configureRouting() {
     routing {
