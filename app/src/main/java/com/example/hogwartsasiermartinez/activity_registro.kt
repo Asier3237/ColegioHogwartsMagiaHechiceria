@@ -1,49 +1,42 @@
 package com.example.hogwartsasiermartinez
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hogwartsasiermartinez.databinding.ActivityMainBinding
+import com.example.hogwartsasiermartinez.databinding.ActivityRegistroBinding
+import com.example.hogwartsasiermartinez.model.Usuario
 import com.example.hogwartsasiermartinez.viewModel.UsuarioViewModel
 import kotlin.getValue
 
-class MainActivity : AppCompatActivity() {
+class activity_registro : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityRegistroBinding
     private val viewModel : UsuarioViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_registro)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding.btInicioSesion.setOnClickListener {
-            var nombre = binding.etNom.text.toString()
-            var passwd = binding.etPasswd.text.toString()
+        binding.btRegistro.setOnClickListener {
+            var nom = binding.etNombreReg.text.toString()
+            var passwd = binding.etPasswdReg.text.toString()
+            var usu = Usuario(null, nom, passwd, null, null, )
 
-            if (nombre != null && passwd != null){
-                viewModel.login(nombre, passwd)
-            }else{
-                Toast.makeText(this, "No puedes dejar campos vacíos",    Toast.LENGTH_SHORT).show()
-            }
-
+            viewModel.addUser()
         }
 
-        binding.tvRegistro.setOnClickListener {
-            var intentVAdmin = Intent(this, activity_registro::class.java)
-            startActivity(intentVAdmin)
+        binding.tvVuelta.setOnClickListener {
+            finish()
         }
-
     }
 }

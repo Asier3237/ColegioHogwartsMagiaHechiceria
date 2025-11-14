@@ -2,7 +2,7 @@ package DAO
 
 import Database.Conexion
 import Model.Usuario
-import com.example.Model.UsuarioLogeado
+import Model.UsuarioLogeado
 import java.sql.ResultSet
 import java.sql.SQLException
 
@@ -36,25 +36,42 @@ object UsuarioDaoImpl {
         return lista
     }
 
-    fun insertar(usuario: Usuario): Boolean {
-        val query = """
-            INSERT INTO usuario (nombre, password, experiencia, nivel, fk_casa_jad)
-            VALUES (?, ?, ?, ?, ?)
-        """.trimIndent()
+    fun registrar(usuario: Usuario): Boolean {
+        val existeQuery = "SELECT COUNT(*) FROM usuario WHERE nombre = ?"
+        val insertQuery = """
+        INSERT INTO usuario (nombre, password, experiencia, nivel, fk_casa_jad)
+        VALUES (?, ?, ?, ?, ?)
+    """.trimIndent()
 
         val connection = Conexion.getConnection()
         if (connection != null) {
             try {
-                val statement = connection.prepareStatement(query)
-                statement.setString(1, usuario.nombre)
-                statement.setString(2, usuario.password)
-                statement.setInt(3, usuario.experiencia)
-                statement.setInt(4, usuario.nivel)
-                statement.setInt(5, usuario.casa_id)
+                // Verificar si el nombre ya existe
+                val checkStmt = connection.prepareStatement(existeQuery)
+                checkStmt.setString(1, usuario.nombre)
+                val result = checkStmt.executeQuery()
+                result.next()
+                val yaExiste = result.getInt(1) > 0
+                result.close()
+                checkStmt.close()
 
-                val filas = statement.executeUpdate()
-                statement.close()
+                if (yaExiste) {
+                    println("❌ El usuario '${usuario.nombre}' ya está registrado.")
+                    return false
+                }
+
+                // Insertar nuevo usuario
+                val insertStmt = connection.prepareStatement(insertQuery)
+                insertStmt.setString(1, usuario.nombre)
+                insertStmt.setString(2, usuario.password)
+                insertStmt.setInt(3, usuario.experiencia)
+                insertStmt.setInt(4, usuario.nivel)
+                insertStmt.setInt(5, usuario.casa_id)
+
+                val filas = insertStmt.executeUpdate()
+                insertStmt.close()
                 return filas > 0
+
             } catch (e: SQLException) {
                 e.printStackTrace()
             } finally {
@@ -66,6 +83,7 @@ object UsuarioDaoImpl {
 
         return false
     }
+
 
     fun obtenerPorId(id: Int): Usuario? {
         val query = "SELECT * FROM usuario WHERE id = ?"

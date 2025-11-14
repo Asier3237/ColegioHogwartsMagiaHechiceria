@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.hogwartsasiermartinez.Api.UserNetwork
 import com.example.hogwartsasiermartinez.model.Usuario
 import androidx.lifecycle.viewModelScope
+import com.example.hogwartsasiermartinez.model.UsuarioLogin
 import kotlinx.coroutines.launch
 
 
@@ -45,6 +46,24 @@ class UsuarioViewModel : ViewModel() {
             }
         }
     }
+
+    fun login(nombre: String, pwd: String) {
+        viewModelScope.launch {
+            try {
+                val datos = UsuarioLogin(nombre, pwd)
+                val response = UserNetwork.retrofit.login(datos)
+                if (response.isSuccessful) {
+                    _usuarioSeleccionado.value = response.body()
+                } else {
+                    _usuarioSeleccionado.value = null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _usuarioSeleccionado.value = null
+            }
+        }
+    }
+
 
     fun addUser(usuario: Usuario){
         viewModelScope.launch {

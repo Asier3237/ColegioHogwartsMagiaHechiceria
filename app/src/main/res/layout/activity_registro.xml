@@ -5,80 +5,62 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <Button
-        android:id="@+id/btInicioSesion"
-        android:layout_width="251dp"
-        android:layout_height="76dp"
-        android:allCaps="false"
-        android:backgroundTint="#3C1F0E"
-        android:elevation="8dp"
-        android:fontFamily="serif"
-        android:letterSpacing="0.05"
-        android:text="Pasar a la selección de casa"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:translationZ="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.752" />
+    tools:context=".activity_registro">
 
     <EditText
-        android:id="@+id/etPasswd"
-        android:layout_width="185dp"
-        android:layout_height="45dp"
+        android:id="@+id/etPasswdReg"
+        android:layout_width="182dp"
+        android:layout_height="39dp"
         android:ems="10"
         android:hint="Contraseña"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.942"
+        app:layout_constraintHorizontal_bias="0.93"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.561" />
+        app:layout_constraintVertical_bias="0.226" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="serif"
+        android:text="Elige tus preferencias de casa:"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.321" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Introduce tu nombre:"
+        android:textSize="16sp"
+        android:fontFamily="serif"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.06"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.166" />
+
+    <TextView
+        android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Introduce tu contraseña:"
         android:textSize="16sp"
+        android:fontFamily="serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintHorizontal_bias="0.058"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.557" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Introduce tu Nombre:"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.107"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.475" />
-
-    <EditText
-        android:id="@+id/etNom"
-        android:layout_width="182dp"
-        android:layout_height="41dp"
-        android:ems="10"
-        android:hint="Nombre"
-        android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.943"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.471" />
+        app:layout_constraintVertical_bias="0.234" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -99,40 +81,60 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="serif"
-            android:text="COLEGIO HOGWARTS"
+            android:text="REGISTRO"
             android:textColor="#FFFFFF"
             android:textSize="34sp" />
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imgLogin"
-        android:layout_width="254dp"
-        android:layout_height="190dp"
+    <EditText
+        android:id="@+id/etNombreReg"
+        android:layout_width="182dp"
+        android:layout_height="39dp"
+        android:ems="10"
+        android:hint="Nombre"
+        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.93"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.158"
-        app:srcCompat="@drawable/logohogwarts" />
+        app:layout_constraintVertical_bias="0.158" />
 
     <TextView
-        android:id="@+id/tvRegistro"
+        android:id="@+id/tvVuelta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="serif"
-        android:text="¿No eres alumno? Regístrate en Hogwarts"
+        android:text="Volver al Inicio de Sesión"
         android:textColor="#3C1F0E"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.87" />
+        app:layout_constraintVertical_bias="0.953" />
 
+    <Button
+        android:id="@+id/btRegistro"
+        android:layout_width="319dp"
+        android:layout_height="51dp"
+        android:allCaps="false"
+        android:backgroundTint="#3C1F0E"
+        android:elevation="8dp"
+        android:fontFamily="serif"
+        android:letterSpacing="0.05"
+        android:text="Registrate en Hogwarts"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:translationZ="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.885" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

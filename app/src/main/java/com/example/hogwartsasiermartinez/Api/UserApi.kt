@@ -1,6 +1,7 @@
 package com.example.hogwartsasiermartinez.Api
 
 import com.example.hogwartsasiermartinez.model.Usuario
+import com.example.hogwartsasiermartinez.model.UsuarioLogin
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -12,6 +13,9 @@ interface UserAPI {
 
     @GET("usuario/{id}")
     suspend fun getUsuario(@Path("id") id: Int): Response<Usuario>
+
+    @POST("usuario/login")
+    suspend fun login(@Body datos: UsuarioLogin): Response<Usuario>
 
     @POST("usuario/registrar")
     suspend fun addUsuario(@Body usuario: Usuario): Response<Boolean>

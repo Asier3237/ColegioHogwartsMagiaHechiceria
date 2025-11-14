@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HogwartsAsierMartinez">
         <activity
+            android:name=".activity_sombrero"
+            android:exported="false" />
+        <activity
+            android:name=".activity_registro"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

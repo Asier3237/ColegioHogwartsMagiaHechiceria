@@ -42,7 +42,7 @@ fun Route.rutas_usuario() {
 
         post("/registrar") {
             val nuevo = call.receive<Usuario>()
-            val exito = UsuarioDaoImpl.insertar(nuevo)
+            val exito = UsuarioDaoImpl.registrar(nuevo)
             call.respond(exito)
         }
 

@@ -7,7 +7,7 @@ data class Usuario(
     val id: Int? = null,
     val nombre: String,
     val password: String,
-    val experiencia: Int,
-    val nivel: Int,
+    val experiencia: Int? = null,
+    val nivel: Int? = null,
     val casa_id: Int
 )
