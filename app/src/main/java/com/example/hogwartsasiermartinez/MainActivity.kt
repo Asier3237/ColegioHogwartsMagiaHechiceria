@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             var nombre = binding.etNom.text.toString()
             var passwd = binding.etPasswd.text.toString()
 
-            if (nombre != null && passwd != null){
+            if (!nombre.isEmpty() && !passwd.isEmpty()){
                 viewModel.login(nombre, passwd)
             }else{
                 Toast.makeText(this, "No puedes dejar campos vacíos",    Toast.LENGTH_SHORT).show()

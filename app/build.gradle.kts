@@ -9,6 +9,13 @@ android {
         version = release(36)
     }
 
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/io.netty.versions.properties"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.example.hogwartsasiermartinez"
         minSdk = 28

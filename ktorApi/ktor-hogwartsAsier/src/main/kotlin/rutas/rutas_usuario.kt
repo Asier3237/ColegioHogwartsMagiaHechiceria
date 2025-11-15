@@ -7,7 +7,9 @@ import io.ktor.server.routing.*
 import Model.Usuario
 import Model.UsuarioLogin
 import DAO.UsuarioDaoImpl
+import com.example.Service.HouseService
 import io.ktor.http.HttpStatusCode
+import java.security.Provider
 
 fun Route.rutas_usuario() {
 
@@ -69,5 +71,15 @@ fun Route.rutas_usuario() {
             }
         }
 
+        post("/selectHouse") {
+            val preferencias = call.receive<List<Int>>() // recibe lista de IDs
+            val casaId = HouseService().selectHouse(preferencias)
+            call.respond(casaId)
+        }
+
+
+
     }
 }
+
+

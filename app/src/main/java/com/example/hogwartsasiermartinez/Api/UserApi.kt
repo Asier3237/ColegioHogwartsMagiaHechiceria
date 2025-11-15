@@ -20,6 +20,9 @@ interface UserAPI {
     @POST("usuario/registrar")
     suspend fun addUsuario(@Body usuario: Usuario): Response<Boolean>
 
+    @POST("usuario/selectHouse")
+    suspend fun selectHouse(@Body preferencias: List<Int>): Response<Int>
+
     @PUT("usuario/modificar/{id}")
     suspend fun updateUsuario(@Path("id") id: Int, @Body usuario: Usuario): Response<Boolean>
 

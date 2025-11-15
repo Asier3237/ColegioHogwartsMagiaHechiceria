@@ -56,7 +56,7 @@ object UsuarioDaoImpl {
                 checkStmt.close()
 
                 if (yaExiste) {
-                    println("❌ El usuario '${usuario.nombre}' ya está registrado.")
+                    println("El usuario '${usuario.nombre}' ya está registrado.")
                     return false
                 }
 
@@ -256,6 +256,35 @@ object UsuarioDaoImpl {
 
         return null
     }
+
+    fun getHouseOccupancy(): Map<Int, Int> {
+        val query = """
+        SELECT houses.id, COUNT(users.id) as number_of_people
+        FROM houses
+        LEFT JOIN users ON houses.id = users.id_house
+        GROUP BY houses.id
+    """.trimIndent()
+
+        val connection = Conexion.getConnection()
+        val occupancy = mutableMapOf<Int, Int>()
+
+        if (connection != null) {
+            try {
+                val statement = connection.prepareStatement(query)
+                val result = statement.executeQuery()
+                while (result.next()) {
+                    occupancy[result.getInt("id")] = result.getInt("number_of_people")
+                }
+                result.close()
+                statement.close()
+            } finally {
+                connection.close()
+            }
+        }
+        return occupancy
+    }
+
+
 
 
     private fun ResultSet.toUsuario(): Usuario = Usuario(

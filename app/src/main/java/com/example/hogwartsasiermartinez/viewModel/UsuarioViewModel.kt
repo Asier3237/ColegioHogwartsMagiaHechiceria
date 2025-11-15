@@ -21,6 +21,25 @@ class UsuarioViewModel : ViewModel() {
     private val _operacionExitosa = MutableLiveData<Boolean>()
     val operacionExitosa: LiveData<Boolean> get() = _operacionExitosa
 
+    private val _casaSeleccionadaId = MutableLiveData<Int>()
+    val casaSeleccionadaId: LiveData<Int> get() = _casaSeleccionadaId
+
+    fun selectHouse(preferences: List<Int>) {
+        viewModelScope.launch {
+            try {
+                val response = UserNetwork.retrofit.selectHouse(preferences)
+                if (response.isSuccessful) {
+                    _casaSeleccionadaId.value = response.body()
+                } else {
+                    _casaSeleccionadaId.value = null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _casaSeleccionadaId.value = null
+            }
+        }
+    }
+
     fun getUsers() {
         viewModelScope.launch {
             try {
