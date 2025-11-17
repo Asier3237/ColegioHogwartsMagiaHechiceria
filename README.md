@@ -46,8 +46,8 @@ Algoritmo interno de asignación (no aleatorio puro).
 📅 Estado del Sprint
 ✅ Base de datos en proceso.
 
-✅ Login y registro en proceso.
+✅ Login y registro terminado.
 
-✅ Sombrero seleccionador en proceso.
+✅ Sombrero seleccionador terminado.
 
 🔜 Próximo sprint: interfaz gráfica, lógica de hechizos y pociones, y conexión con servidor.
