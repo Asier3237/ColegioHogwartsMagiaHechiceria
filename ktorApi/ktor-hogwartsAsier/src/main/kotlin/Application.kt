@@ -3,25 +3,17 @@ package com.example
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.routing.*
-import routes.rutas_usuario
 
 fun main() {
     println("🚀 Iniciando módulo Ktor...")
 
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
-        install(ContentNegotiation) { json() }
-        routing {
-            rutas_usuario()
-        }
-    }.start(wait = true)
+    embeddedServer(Netty, port = 8090, host = "127.0.0.1", module = Application::module)
+        .start(wait = true)
+
 }
 
 
 fun Application.module() {
     configureSerialization()
     configureRouting()
-
 }

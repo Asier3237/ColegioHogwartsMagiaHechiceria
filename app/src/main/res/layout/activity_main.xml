@@ -15,7 +15,7 @@
         android:elevation="8dp"
         android:fontFamily="serif"
         android:letterSpacing="0.05"
-        android:text="Pasar a la selección de casa"
+        android:text="Entrar a Hogwarts"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:translationZ="4dp"

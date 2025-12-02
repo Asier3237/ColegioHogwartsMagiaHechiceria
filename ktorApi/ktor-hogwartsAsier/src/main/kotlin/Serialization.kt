@@ -6,10 +6,14 @@ import io.ktor.server.http.content.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json()
+        json(Json {
+            ignoreUnknownKeys = true // Ignora campos que no estén en la data class
+            isLenient = true         // Permite un JSON más flexible
+        })
     }
     routing {
         get("/json/kotlinx-serialization") {

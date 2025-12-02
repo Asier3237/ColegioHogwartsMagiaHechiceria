@@ -1,5 +1,6 @@
 package com.example.hogwartsasiermartinez.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,9 @@ import kotlinx.coroutines.launch
 
 
 class UsuarioViewModel : ViewModel() {
+
+    var nombreAux: String? = null
+    var passwdAux: String? = null
 
     private val _usuarios = MutableLiveData<List<Usuario>>()
     val usuarios: LiveData<List<Usuario>> get() = _usuarios
@@ -28,17 +32,21 @@ class UsuarioViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = UserNetwork.retrofit.selectHouse(preferences)
-                if (response.isSuccessful) {
-                    _casaSeleccionadaId.value = response.body()
+                val casaId = response.body()
+                Log.d("Registro", "Respuesta selectHouse: ${casaId}")
+
+                if (response.isSuccessful && casaId != null && casaId > 0) {
+                    _casaSeleccionadaId.value = casaId
                 } else {
-                    _casaSeleccionadaId.value = null
+                    _casaSeleccionadaId.value = -1
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                _casaSeleccionadaId.value = null
+                _casaSeleccionadaId.value = -1
             }
         }
     }
+
 
     fun getUsers() {
         viewModelScope.launch {
@@ -84,18 +92,19 @@ class UsuarioViewModel : ViewModel() {
     }
 
 
-    fun addUser(usuario: Usuario){
+    fun addUser(usuario: Usuario) {
         viewModelScope.launch {
             try {
-                val resultado = UserNetwork.retrofit.addUsuario(usuario)
-                if (resultado.isSuccessful){
-                    _operacionExitosa.value = resultado.body()
+                val response = UserNetwork.retrofit.addUsuario(usuario)
+                if (!response.isSuccessful) {
+                    Log.e("Registro", "Error al insertar usuario: ${response.code()}")
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
+
 
     fun updateUser(id: Int, usuario: Usuario){
         viewModelScope.launch {

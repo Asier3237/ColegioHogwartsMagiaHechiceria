@@ -7,6 +7,7 @@ import io.ktor.server.routing.*
 import Model.Usuario
 import Model.UsuarioLogin
 import DAO.UsuarioDaoImpl
+import com.example.DAO.CasaDaoImpl
 import com.example.Service.HouseService
 import io.ktor.http.HttpStatusCode
 import java.security.Provider
@@ -45,7 +46,12 @@ fun Route.rutas_usuario() {
         post("/registrar") {
             val nuevo = call.receive<Usuario>()
             val exito = UsuarioDaoImpl.registrar(nuevo)
-            call.respond(exito)
+
+            if (exito) {
+                call.respond(HttpStatusCode.Created, true)
+            } else {
+                call.respond(HttpStatusCode.Conflict, false)
+            }
         }
 
         put("/modificar/{id}") {
@@ -72,11 +78,26 @@ fun Route.rutas_usuario() {
         }
 
         post("/selectHouse") {
-            val preferencias = call.receive<List<Int>>() // recibe lista de IDs
+            val preferencias = call.receive<List<Int>>()
             val casaId = HouseService().selectHouse(preferencias)
+            println("Casa asignada: $casaId")
             call.respond(casaId)
         }
 
+    }
+
+    route("/casas"){
+
+        get("/listado") {
+            try {
+                val casas = CasaDaoImpl.obtenerTodas()
+                println("Casas obtenidas: $casas")
+                call.respond(casas)
+            } catch (e: Exception) {
+                println("Error al obtener casas: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, "Error interno: ${e.message}")
+            }
+        }
 
 
     }

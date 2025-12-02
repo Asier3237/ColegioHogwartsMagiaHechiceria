@@ -1,5 +1,6 @@
 package com.example.hogwartsasiermartinez.Api
 
+import com.example.hogwartsasiermartinez.model.Casa
 import com.example.hogwartsasiermartinez.model.Usuario
 import com.example.hogwartsasiermartinez.model.UsuarioLogin
 import retrofit2.Call
@@ -28,5 +29,9 @@ interface UserAPI {
 
     @DELETE("usuario/borrar/{id}")
     suspend fun deleteUsuario(@Path("id") id: Int): Response<Boolean>
+
+    @GET("casas/listado")
+    suspend fun getCasas(): Response<List<Casa>>
+
 }
 

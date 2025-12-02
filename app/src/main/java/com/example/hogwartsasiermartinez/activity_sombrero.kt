@@ -1,6 +1,8 @@
 package com.example.hogwartsasiermartinez
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,8 +29,11 @@ class activity_sombrero : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        
+        binding.imgSombrero.setImageResource(R.drawable.sombreroseleccionador)
 
         val casaId = intent.getIntExtra("casaId", -1)
+        Log.d("Registro", "CasaId = $casaId")
 
         val (nombreCasa, imagenResId) = when (casaId) {
             1 -> "Gryffindor" to R.drawable.gryffindor
@@ -42,7 +47,8 @@ class activity_sombrero : AppCompatActivity() {
         binding.imgCasa.setImageResource(imagenResId)
 
         binding.btVueltaLogin.setOnClickListener {
-            finish()
+            var intentVMain = Intent(this, MainActivity::class.java)
+            startActivity(intentVMain)
         }
 
     }

@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hogwartsasiermartinez.R
 import com.example.hogwartsasiermartinez.model.Casa
+import java.util.Collections
 
 class CasasAdapter(
     val casas: MutableList<Casa>
@@ -37,15 +38,15 @@ class CasasAdapter(
             else -> Color.WHITE
         }
         holder.view.setBackgroundColor(fondo)
-
     }
 
     override fun getItemCount() = casas.size
 
-    // 👉 Esta es la función que usas en el Activity
     fun getOrdenCasasId(): List<Int> = casas.map { it.id }
-
-    // Si quieres también devolver nombres:
     fun getOrdenCasasNombre(): List<String> = casas.map { it.nombre }
-}
 
+    fun onItemMove(from: Int, to: Int) {
+        Collections.swap(casas, from, to)
+        notifyItemMoved(from, to)
+    }
+}

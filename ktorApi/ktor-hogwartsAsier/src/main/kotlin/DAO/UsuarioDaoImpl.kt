@@ -39,14 +39,13 @@ object UsuarioDaoImpl {
     fun registrar(usuario: Usuario): Boolean {
         val existeQuery = "SELECT COUNT(*) FROM usuario WHERE nombre = ?"
         val insertQuery = """
-        INSERT INTO usuario (nombre, password, experiencia, nivel, fk_casa_jad)
+        INSERT INTO usuario (nombre, password, experiencia, nivel, casa_id)
         VALUES (?, ?, ?, ?, ?)
     """.trimIndent()
 
         val connection = Conexion.getConnection()
         if (connection != null) {
             try {
-                // Verificar si el nombre ya existe
                 val checkStmt = connection.prepareStatement(existeQuery)
                 checkStmt.setString(1, usuario.nombre)
                 val result = checkStmt.executeQuery()
@@ -60,7 +59,6 @@ object UsuarioDaoImpl {
                     return false
                 }
 
-                // Insertar nuevo usuario
                 val insertStmt = connection.prepareStatement(insertQuery)
                 insertStmt.setString(1, usuario.nombre)
                 insertStmt.setString(2, usuario.password)
@@ -69,10 +67,12 @@ object UsuarioDaoImpl {
                 insertStmt.setInt(5, usuario.casa_id)
 
                 val filas = insertStmt.executeUpdate()
+                println("Filas insertadas: $filas") // 👈 log para depurar
                 insertStmt.close()
                 return filas > 0
 
             } catch (e: SQLException) {
+                println("Error al registrar usuario: ${e.message}")
                 e.printStackTrace()
             } finally {
                 connection.close()
@@ -83,6 +83,7 @@ object UsuarioDaoImpl {
 
         return false
     }
+
 
 
     fun obtenerPorId(id: Int): Usuario? {
@@ -150,7 +151,7 @@ object UsuarioDaoImpl {
                 password = ?, 
                 experiencia = ?, 
                 nivel = ?, 
-                fk_casa_jad = ?
+                casa_id = ?
             WHERE id = ?
         """.trimIndent()
 
@@ -220,7 +221,6 @@ object UsuarioDaoImpl {
                     resultUsuario.close()
                     statementUsuario.close()
 
-                    // Obtener roles
                     val roles = mutableListOf<String>()
                     val statementRoles = connection.prepareStatement(queryRoles)
                     statementRoles.setInt(1, usuario.id!!)
@@ -259,10 +259,10 @@ object UsuarioDaoImpl {
 
     fun getHouseOccupancy(): Map<Int, Int> {
         val query = """
-        SELECT houses.id, COUNT(users.id) as number_of_people
-        FROM houses
-        LEFT JOIN users ON houses.id = users.id_house
-        GROUP BY houses.id
+        SELECT casa.id as id, COUNT(usuario.id) as numGente
+        FROM casa
+        LEFT JOIN usuario ON casa.id = usuario.casa_id
+        GROUP BY casa.id
     """.trimIndent()
 
         val connection = Conexion.getConnection()
@@ -273,7 +273,7 @@ object UsuarioDaoImpl {
                 val statement = connection.prepareStatement(query)
                 val result = statement.executeQuery()
                 while (result.next()) {
-                    occupancy[result.getInt("id")] = result.getInt("number_of_people")
+                    occupancy[result.getInt("id")] = result.getInt("numGente")
                 }
                 result.close()
                 statement.close()

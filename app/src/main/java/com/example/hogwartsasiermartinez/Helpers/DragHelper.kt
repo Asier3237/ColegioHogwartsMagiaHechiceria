@@ -3,7 +3,6 @@ package com.example.hogwartsasiermartinez.Helpers
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hogwartsasiermartinez.Adapters.CasasAdapter
-import java.util.Collections
 
 class DragHelper(
     private val adapter: CasasAdapter
@@ -16,17 +15,13 @@ class DragHelper(
     ): Boolean {
         val from = vh.bindingAdapterPosition
         val to = target.bindingAdapterPosition
-        Collections.swap(adapter.casas, from, to)
-        adapter.notifyItemMoved(from, to)
+        adapter.onItemMove(from, to)
         return true
     }
 
     override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {
-        // No usamos swipe
+        // No se usa de momento
     }
 
-    // 🔑 Esto asegura que el drag se activa con pulsación larga
     override fun isLongPressDragEnabled(): Boolean = true
 }
-
-
