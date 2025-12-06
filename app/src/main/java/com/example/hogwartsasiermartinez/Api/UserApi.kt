@@ -2,6 +2,7 @@ package com.example.hogwartsasiermartinez.Api
 
 import com.example.hogwartsasiermartinez.model.Casa
 import com.example.hogwartsasiermartinez.model.Usuario
+import com.example.hogwartsasiermartinez.model.UsuarioLogeado
 import com.example.hogwartsasiermartinez.model.UsuarioLogin
 import retrofit2.Call
 import retrofit2.Response
@@ -16,7 +17,7 @@ interface UserAPI {
     suspend fun getUsuario(@Path("id") id: Int): Response<Usuario>
 
     @POST("usuario/login")
-    suspend fun login(@Body datos: UsuarioLogin): Response<Usuario>
+    suspend fun login(@Body datos: UsuarioLogin): Response<UsuarioLogeado>
 
     @POST("usuario/registrar")
     suspend fun addUsuario(@Body usuario: Usuario): Response<Boolean>

@@ -5,6 +5,7 @@ import Model.Usuario
 import Model.UsuarioLogeado
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.sql.Statement
 
 object UsuarioDaoImpl {
 
@@ -39,13 +40,14 @@ object UsuarioDaoImpl {
     fun registrar(usuario: Usuario): Boolean {
         val existeQuery = "SELECT COUNT(*) FROM usuario WHERE nombre = ?"
         val insertQuery = """
-        INSERT INTO usuario (nombre, password, experiencia, nivel, casa_id)
-        VALUES (?, ?, ?, ?, ?)
-    """.trimIndent()
+            INSERT INTO usuario (nombre, password, experiencia, nivel, casa_id)
+            VALUES (?, ?, ?, ?, ?)
+            """.trimIndent()
 
         val connection = Conexion.getConnection()
         if (connection != null) {
             try {
+                // Comprobar si ya existe
                 val checkStmt = connection.prepareStatement(existeQuery)
                 checkStmt.setString(1, usuario.nombre)
                 val result = checkStmt.executeQuery()
@@ -59,15 +61,32 @@ object UsuarioDaoImpl {
                     return false
                 }
 
-                val insertStmt = connection.prepareStatement(insertQuery)
+                // Insertar usuario y recuperar ID generado
+                val insertStmt = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)
                 insertStmt.setString(1, usuario.nombre)
                 insertStmt.setString(2, usuario.password)
-                insertStmt.setInt(3, usuario.experiencia)
-                insertStmt.setInt(4, usuario.nivel)
+                insertStmt.setInt(3, usuario.experiencia ?: 0)
+                insertStmt.setInt(4, usuario.nivel ?: 1)
                 insertStmt.setInt(5, usuario.casa_id)
 
                 val filas = insertStmt.executeUpdate()
-                println("Filas insertadas: $filas") // 👈 log para depurar
+
+                if (filas > 0) {
+                    val keys = insertStmt.generatedKeys
+                    if (keys.next()) {
+                        val usuarioId = keys.getInt(1)
+
+                        // Asignar rol por defecto (alumno)
+                        val statementRol = connection.prepareStatement(
+                            "INSERT INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)"
+                        )
+                        statementRol.setInt(1, usuarioId)
+                        statementRol.setInt(2, 1) // rol alumno
+                        statementRol.executeUpdate()
+                        statementRol.close()
+                    }
+                }
+
                 insertStmt.close()
                 return filas > 0
 
@@ -83,6 +102,7 @@ object UsuarioDaoImpl {
 
         return false
     }
+
 
 
 
@@ -206,7 +226,13 @@ object UsuarioDaoImpl {
 
     fun login(nombre: String, password: String): UsuarioLogeado? {
         val queryUsuario = "SELECT * FROM usuario WHERE nombre = ? AND password = ?"
-        val queryRoles = "SELECT rol_id FROM usuario_rol WHERE usuario_id = ?"
+        val queryRoles = """
+            SELECT r.nombre
+            FROM rol r
+            JOIN usuario_rol ur ON r.id = ur.rol_id
+            WHERE ur.usuario_id = ?
+            """.trimIndent()
+
 
         val connection = Conexion.getConnection()
         if (connection != null) {
@@ -227,7 +253,7 @@ object UsuarioDaoImpl {
                     val resultRoles = statementRoles.executeQuery()
 
                     while (resultRoles.next()) {
-                        roles.add(resultRoles.getString("rol"))
+                        roles.add(resultRoles.getString("nombre"))
                     }
 
                     resultRoles.close()

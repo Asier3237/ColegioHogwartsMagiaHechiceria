@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.hogwartsasiermartinez.Api.UserNetwork
 import com.example.hogwartsasiermartinez.model.Usuario
 import androidx.lifecycle.viewModelScope
+import com.example.hogwartsasiermartinez.model.UsuarioLogeado
 import com.example.hogwartsasiermartinez.model.UsuarioLogin
 import kotlinx.coroutines.launch
 
@@ -19,8 +20,11 @@ class UsuarioViewModel : ViewModel() {
     private val _usuarios = MutableLiveData<List<Usuario>>()
     val usuarios: LiveData<List<Usuario>> get() = _usuarios
 
-    private val _usuarioSeleccionado = MutableLiveData<Usuario?>()
-    val usuarioSeleccionado: LiveData<Usuario?> get() = _usuarioSeleccionado
+    private val _usuarioSeleccionado = MutableLiveData<UsuarioLogeado?>()
+    val usuarioSeleccionado: LiveData<UsuarioLogeado?> get() = _usuarioSeleccionado
+
+    private val _usuarioSeleccionadoId = MutableLiveData<Usuario?>()
+    val usuarioSeleccionadoId: LiveData<Usuario?> get() = _usuarioSeleccionadoId
 
     private val _operacionExitosa = MutableLiveData<Boolean>()
     val operacionExitosa: LiveData<Boolean> get() = _operacionExitosa
@@ -66,7 +70,7 @@ class UsuarioViewModel : ViewModel() {
             try {
                 val resultado = UserNetwork.retrofit.getUsuario(id)
                 if (resultado.isSuccessful) {
-                    _usuarioSeleccionado.value = resultado.body()
+                    _usuarioSeleccionadoId.value = resultado.body()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

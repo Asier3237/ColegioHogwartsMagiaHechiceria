@@ -29,7 +29,7 @@ class activity_sombrero : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        
+
         binding.imgSombrero.setImageResource(R.drawable.sombreroseleccionador)
 
         val casaId = intent.getIntExtra("casaId", -1)
