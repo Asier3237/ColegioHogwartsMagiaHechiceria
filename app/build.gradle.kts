@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,8 +66,7 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:2.3.4")
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-
-
+    implementation("androidx.fragment:fragment-ktx:1.8.9")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

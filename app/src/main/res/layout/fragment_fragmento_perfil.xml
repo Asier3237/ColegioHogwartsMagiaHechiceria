@@ -5,9 +5,79 @@
     android:layout_height="match_parent"
     tools:context=".FragmentoPerfil">
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello" />
+        android:background="#F5F5F5">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Foto de la casa -->
+            <ImageView
+                android:id="@+id/imgCasa"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:contentDescription="Casa del usuario"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Nombre -->
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#3C1F0E"/>
+
+            <!-- Nivel -->
+            <TextView
+                android:id="@+id/tvNivel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#555555"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Experiencia -->
+            <TextView
+                android:id="@+id/tvExperiencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#555555"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Casa -->
+            <TextView
+                android:id="@+id/tvCasa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#555555"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Rol -->
+            <TextView
+                android:id="@+id/tvRol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#555555"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Rol activo -->
+            <TextView
+                android:id="@+id/tvRolActivo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#D4AF37"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>

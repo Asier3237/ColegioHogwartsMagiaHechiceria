@@ -1,29 +1,82 @@
 package com.example.hogwartsasiermartinez
 
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hogwartsasiermartinez.databinding.ActivityAdminBinding
-import com.example.hogwartsasiermartinez.databinding.ActivityAlumnosBinding
 
 class AdminActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityAdminBinding
+    private lateinit var binding: ActivityAdminBinding
+    private var usuarioId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityAdminBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        setSupportActionBar(binding.toolbar)
+
+        val toggle = ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            binding.toolbar,
+            0,
+            0
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        usuarioId = intent.getIntExtra("usuarioId", -1)
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, FragmentoUsuarios())
+                .commit()
         }
 
-        val usuarioId = intent.getIntExtra("usuarioId", -1)
+        binding.navView.setNavigationItemSelectedListener { item ->
+            val fragment = when (item.itemId) {
+                R.id.nav_usuarios -> FragmentoUsuarios()
+                R.id.nav_pociones -> FragmentoPociones()
+                R.id.nav_hechizos -> FragmentoHechizos()
+                R.id.nav_asignaturas -> FragmentoAsignaturas()
+                R.id.nav_ranking -> FragmentoRankingCasas()
+                else -> null
+            }
 
+            fragment?.let {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, it)
+                    .commit()
+            }
+
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+
+        val imgPerfil = binding.toolbar.findViewById<ImageView>(R.id.imgPerfil)
+        imgPerfil.setOnClickListener {
+            val fragment = FragmentoPerfil().apply {
+                arguments = Bundle().apply {
+                    putInt("usuarioId", usuarioId) // aquí ya tienes el id correcto
+                }
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
+        val headerView = binding.navView.getHeaderView(0)
+        val tvRol = headerView.findViewById<TextView>(R.id.tvRol)
+        tvRol.text = "Administrador"
     }
 }
+

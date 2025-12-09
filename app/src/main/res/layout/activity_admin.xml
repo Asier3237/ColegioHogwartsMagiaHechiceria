@@ -1,45 +1,85 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AdminActivity">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="414dp"
-        android:layout_height="67dp"
-        android:background="#3C1F0E"
-        android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="serif"
-            android:text="COLEGIO HOGWARTS"
-            android:textColor="#FFFFFF"
-            android:textSize="34sp" />
+<!--        &lt;!&ndash; Cabecera Hogwarts &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="#3C1F0E"-->
+<!--            android:gravity="center">-->
 
-    </LinearLayout>
+<!--            <TextView-->
+<!--                android:id="@+id/tvTitulo"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:fontFamily="serif"-->
+<!--                android:text="COLEGIO HOGWARTS"-->
+<!--                android:textColor="#FFFFFF"-->
+<!--                android:textSize="28sp"/>-->
+<!--        </LinearLayout>-->
 
-    <TextView
-        android:id="@+id/textView7"
+        <!-- Toolbar con botón perfil -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#3C1F0E"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Título centrado -->
+                <TextView
+                    android:id="@+id/tvTituloToolbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="COLEGIO HOGWARTS"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:fontFamily="serif"
+                    android:layout_centerInParent="true"/>
+
+                <!-- Icono de perfil a la derecha -->
+                <ImageView
+                    android:id="@+id/imgPerfil"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_perfil"
+                    android:contentDescription="Perfil"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"/>
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- Contenedor de fragmentos -->
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"/>
+        </LinearLayout>
+
+    <!-- Menú lateral -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Activity Admins"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#FFFFFF"
+        app:menu="@menu/menu_admin"
+        app:headerLayout="@layout/nav_header_admin"/>
+</androidx.drawerlayout.widget.DrawerLayout>

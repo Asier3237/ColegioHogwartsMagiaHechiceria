@@ -4,7 +4,6 @@ import com.example.hogwartsasiermartinez.model.Casa
 import com.example.hogwartsasiermartinez.model.Usuario
 import com.example.hogwartsasiermartinez.model.UsuarioLogeado
 import com.example.hogwartsasiermartinez.model.UsuarioLogin
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -29,7 +28,7 @@ interface UserAPI {
     suspend fun updateUsuario(@Path("id") id: Int, @Body usuario: Usuario): Response<Boolean>
 
     @DELETE("usuario/borrar/{id}")
-    suspend fun deleteUsuario(@Path("id") id: Int): Response<Boolean>
+    suspend fun deleteUsuario(@Path("id") id: Int?): Response<Boolean>
 
     @GET("casas/listado")
     suspend fun getCasas(): Response<List<Casa>>

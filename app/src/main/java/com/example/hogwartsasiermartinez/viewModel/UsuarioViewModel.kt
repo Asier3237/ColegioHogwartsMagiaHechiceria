@@ -29,8 +29,8 @@ class UsuarioViewModel : ViewModel() {
     private val _operacionExitosa = MutableLiveData<Boolean>()
     val operacionExitosa: LiveData<Boolean> get() = _operacionExitosa
 
-    private val _casaSeleccionadaId = MutableLiveData<Int>()
-    val casaSeleccionadaId: LiveData<Int> get() = _casaSeleccionadaId
+    private val _casaSeleccionadaId = MutableLiveData<Int?>()
+    val casaSeleccionadaId: LiveData<Int?> get() = _casaSeleccionadaId
 
     fun selectHouse(preferences: List<Int>) {
         viewModelScope.launch {
@@ -123,7 +123,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
-    fun deleteUser(id: Int){
+    fun deleteUser(id: Int?){
         viewModelScope.launch {
             try {
                 val resultado = UserNetwork.retrofit.deleteUsuario(id)
