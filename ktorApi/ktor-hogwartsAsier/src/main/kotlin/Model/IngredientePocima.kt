@@ -1,4 +1,9 @@
 package com.example.Model
 
-class IngredientePocima {
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class IngredientePocima(
+    val ingredienteId: Int,
+    val cantidad: Int
+)

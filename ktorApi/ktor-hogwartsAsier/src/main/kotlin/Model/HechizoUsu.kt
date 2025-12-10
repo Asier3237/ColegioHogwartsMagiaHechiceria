@@ -1,3 +1,9 @@
 package com.example.Model
 
-data class HechizoUsu()
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class HechizoUsu(
+    val alumnoId: Int,
+    val hechizoId: Int
+)

@@ -371,7 +371,64 @@ object UsuarioDaoImpl {
         }
     }
 
+    fun getTodosLosRoles(): List<String> {
+        val query = "SELECT nombre FROM rol"
+        val connection = Conexion.getConnection() ?: return emptyList()
+        val roles = mutableListOf<String>()
 
+        return try {
+            val statement = connection.prepareStatement(query)
+            val resultSet = statement.executeQuery()
+            while (resultSet.next()) {
+                roles.add(resultSet.getString("nombre"))
+            }
+            statement.close()
+            roles // Devuelve la lista de nombres de roles
+        } catch (e: SQLException) {
+            println("Error en BD al obtener roles: ${e.message}")
+            emptyList() // Devuelve una lista vacía si hay un error
+        } finally {
+            connection.close()
+        }
+    }
+
+    // --- FUNCIÓN NUEVA PARA CAMBIAR EL ROL DE UN USUARIO ---
+    fun cambiarRolDeUsuario(usuarioId: Int, nombreNuevoRol: String): Boolean {
+        val connection = Conexion.getConnection() ?: return false
+
+        return try {
+            // 1. Buscamos el ID del nuevo rol a partir de su nombre
+            val rolIdQuery = "SELECT id FROM rol WHERE nombre = ?"
+            val rolIdStatement = connection.prepareStatement(rolIdQuery)
+            rolIdStatement.setString(1, nombreNuevoRol)
+            val rolIdResult = rolIdStatement.executeQuery()
+
+            if (!rolIdResult.next()) {
+                println("El rol '$nombreNuevoRol' no existe.")
+                rolIdStatement.close()
+                return false // Si el rol no se encuentra, no podemos continuar
+            }
+            val idDelNuevoRol = rolIdResult.getInt("id")
+            rolIdStatement.close()
+
+            // 2. Usamos REPLACE INTO para actualizar o insertar el rol del usuario
+            // en la tabla intermedia 'usuario_rol'.
+            val updateQuery = "REPLACE INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)"
+            val updateStatement = connection.prepareStatement(updateQuery)
+            updateStatement.setInt(1, usuarioId)
+            updateStatement.setInt(2, idDelNuevoRol)
+
+            val affectedRows = updateStatement.executeUpdate()
+            updateStatement.close()
+
+            affectedRows > 0 // Devuelve 'true' si se modificó al menos una fila
+        } catch (e: SQLException) {
+            println("Error en BD al cambiar rol: ${e.message}")
+            false
+        } finally {
+            connection.close()
+        }
+    }
 
     private fun ResultSet.toUsuario(): Usuario = Usuario(
         id = getInt("id"),

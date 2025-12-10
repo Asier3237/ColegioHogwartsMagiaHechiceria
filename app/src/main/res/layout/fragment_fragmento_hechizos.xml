@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FragmentoHechizos">
 
-    <TextView
+    <!-- El RecyclerView ocupará toda la pantalla y mostrará la lista de hechizos -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerHechizos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Pociones" />
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_hechizo" />
 
-    <!-- Botón flotante para añadir hechizos -->
+    <!-- El FloatingActionButton para añadir nuevos hechizos -->
+    <!-- Inicialmente lo ponemos como 'gone', el fragmento lo hará visible si es necesario -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnAddHechizo"
+        android:id="@+id/fabAnadirHechizo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Añadir hechizo"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="#3C1F0E"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"/>
-</FrameLayout>
+        android:layout_margin="16dp"
+        android:contentDescription="Añadir nuevo hechizo"
+        android:src="@android:drawable/ic_input_add"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

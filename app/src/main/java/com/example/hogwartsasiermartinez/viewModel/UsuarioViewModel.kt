@@ -32,6 +32,22 @@ class UsuarioViewModel : ViewModel() {
     private val _casaSeleccionadaId = MutableLiveData<Int?>()
     val casaSeleccionadaId: LiveData<Int?> get() = _casaSeleccionadaId
 
+    private val _roles = MutableLiveData<List<String>>()
+    val roles: LiveData<List<String>> get() = _roles
+
+    // Para confirmar a la vista que el rol se cambió
+    private val _actualizacionExitosa = MutableLiveData<Boolean?>()
+    val actualizacionExitosa: LiveData<Boolean?> get() = _actualizacionExitosa
+
+    // Para comunicar cualquier error (puedes reutilizar uno si ya lo tienes)
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
+
+    init {
+        getRoles()
+        getUsers()
+    }
+
     fun selectHouse(preferences: List<Int>) {
         viewModelScope.launch {
             try {
@@ -134,6 +150,53 @@ class UsuarioViewModel : ViewModel() {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun getRoles() {
+        viewModelScope.launch {
+            try {
+                // Este endpoint lo crearemos en la API
+                val response = UserNetwork.retrofit.getRoles()
+                if (response.isSuccessful) {
+                    _roles.postValue(response.body())
+                } else {
+                    _error.postValue("Error al cargar roles: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Error de red: No se pudieron cargar los roles.")
+            }
+        }
+    }
+
+    fun cambiarRol(idUsuario: Int?, nuevoRol: String) {
+        // --- CORRECCIÓN CLAVE ---
+        // Si el idUsuario es nulo, no hacemos nada y salimos de la función.
+        if (idUsuario == null) {
+            _error.postValue("Error: El ID del usuario es nulo.")
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                // Ahora 'idUsuario' está garantizado que no es nulo aquí
+                val response = UserNetwork.retrofit.cambiarRol(idUsuario, nuevoRol)
+                if (response.isSuccessful) {
+                    _actualizacionExitosa.postValue(true)
+                    // Recargamos la lista de usuarios para que la vista se actualice
+                    getUsers()
+                } else {
+                    _error.postValue("Fallo al cambiar rol: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Error de red: No se pudo cambiar el rol.")
+            }
+        }
+    }
+
+    // Función para limpiar el estado y evitar que el Toast de éxito se muestre repetidamente
+    fun onActualizacionCompletada() {
+        _actualizacionExitosa.value = null
+        _error.value = null // También limpiamos el error
     }
 
 }

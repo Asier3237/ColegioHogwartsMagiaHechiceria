@@ -16,6 +16,9 @@
         android:theme="@style/Theme.HogwartsAsierMartinez"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".CrearPocionActivity"
+            android:exported="false" />
+        <activity
             android:name=".SeleccionRolActivity"
             android:exported="false" />
         <activity
