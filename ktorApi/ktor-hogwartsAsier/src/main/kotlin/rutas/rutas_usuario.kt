@@ -7,6 +7,7 @@ import io.ktor.server.routing.*
 import Model.Usuario
 import Model.UsuarioLogin
 import DAO.UsuarioDaoImpl
+import com.example.DAO.AsignaturaDaoImpl
 import com.example.DAO.CasaDaoImpl
 import com.example.Service.HouseService
 import io.ktor.http.HttpStatusCode
@@ -84,6 +85,43 @@ fun Route.rutas_usuario() {
             call.respond(casaId)
         }
 
+        get("/profesores"){
+            try {
+                val profesores = UsuarioDaoImpl.listadoProfesores()
+                call.respond(profesores)
+            }catch (e: Exception){
+                println("Error al obtener profesores: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, "Error interno: ${e.message}")
+            }
+        }
+
+        // En tu archivo de rutas de Ktor, dentro del bloque routing { ... }
+
+// --- CÓDIGO FINAL Y CORRECTO PARA LA RUTA ---
+        post("/asignaturas/{asignaturaId}/profesor/{profesorId}") {
+            // Extraemos los IDs de la URL
+            val asignaturaId = call.parameters["asignaturaId"]?.toIntOrNull()
+            val profesorId = call.parameters["profesorId"]?.toIntOrNull()
+
+            // Comprobamos que los IDs son válidos
+            if (asignaturaId == null || profesorId == null) {
+                call.respond(HttpStatusCode.BadRequest, "Los IDs deben ser números enteros.")
+                return@post
+            }
+
+            // Llamamos a la nueva función del DAO
+            val exito = UsuarioDaoImpl.asignarProfesorAAsignatura(asignaturaId, profesorId)
+
+            if (exito) {
+                // ¡Éxito! El DAO confirmó que la operación en la BD funcionó.
+                call.respond(HttpStatusCode.OK, "Profesor asignado correctamente.")
+            } else {
+                // El DAO devolvió false, indicando un error en la base de datos.
+                call.respond(HttpStatusCode.InternalServerError, "No se pudo completar la asignación en la base de datos.")
+            }
+        }
+
+
     }
 
     route("/casas"){
@@ -101,6 +139,19 @@ fun Route.rutas_usuario() {
 
 
     }
+
+    route("/asignaturas"){
+        get("/listado"){
+            try {
+                val asignaturas = AsignaturaDaoImpl.obtenerTodas()
+                call.respond(asignaturas)
+            }catch (e: Exception){
+                print("Error al obtener las asignaturas: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, "Error interno: ${e.message}")
+            }
+        }
+    }
+
 }
 
 

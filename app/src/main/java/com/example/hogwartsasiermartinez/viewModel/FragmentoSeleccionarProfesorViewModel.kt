@@ -2,6 +2,6 @@ package com.example.hogwartsasiermartinez.viewModel
 
 import androidx.lifecycle.ViewModel
 
-class FragmentoHechizosViewModel : ViewModel() {
+class FragmentoSeleccionarProfesorViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 }

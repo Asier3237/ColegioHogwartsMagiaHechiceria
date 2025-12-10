@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hogwartsasiermartinez.Adapters.CasasAdapter
+import com.example.hogwartsasiermartinez.Auxiliar.Sesion
 import com.example.hogwartsasiermartinez.Helpers.DragHelper
 import com.example.hogwartsasiermartinez.databinding.ActivityRegistroBinding
 import com.example.hogwartsasiermartinez.model.Usuario
@@ -50,7 +51,6 @@ class activity_registro : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
 
-
         casasViewModel.cargarCasas()
 
         binding.btRegistro.setOnClickListener {
@@ -74,10 +74,13 @@ class activity_registro : AppCompatActivity() {
                 )
                 viewModel.addUser(usuario)
 
+                // 🔹 CAMBIO: guardamos en Sesion en vez de putExtra
+                Sesion.casaId = casaId
+
                 val intentVSombrero = Intent(this, activity_sombrero::class.java)
-                intentVSombrero.putExtra("casaId", casaId)
                 startActivity(intentVSombrero)
             }
         }
     }
 }
+

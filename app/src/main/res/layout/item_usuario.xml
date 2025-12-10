@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:orientation="vertical"
         android:padding="8dp"
         android:layout_width="match_parent"
@@ -20,7 +20,14 @@
             android:id="@+id/tvCasa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-    </LinearLayout>
 
+        <!-- Nuevo campo para mostrar el rol -->
+        <TextView
+            android:id="@+id/tvRol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#555555"
+            android:textStyle="italic"/>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

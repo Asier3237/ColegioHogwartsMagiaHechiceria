@@ -8,10 +8,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hogwartsasiermartinez.Auxiliar.Sesion
 import com.example.hogwartsasiermartinez.databinding.ActivityMainBinding
 import com.example.hogwartsasiermartinez.viewModel.UsuarioViewModel
-import kotlin.getValue
-import kotlin.jvm.java
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,36 +29,39 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btInicioSesion.setOnClickListener {
-            var nombre = binding.etNom.text.toString()
-            var passwd = binding.etPasswd.text.toString()
+            val nombre = binding.etNom.text.toString()
+            val passwd = binding.etPasswd.text.toString()
 
-            if (!nombre.isEmpty() && !passwd.isEmpty()) {
+            if (nombre.isNotEmpty() && passwd.isNotEmpty()) {
                 viewModel.login(nombre, passwd)
             } else {
                 Toast.makeText(this, "No puedes dejar campos vacíos", Toast.LENGTH_SHORT).show()
             }
-
         }
 
         viewModel.usuarioSeleccionado.observe(this) { usuarioLogeado ->
             if (usuarioLogeado != null) {
                 if (usuarioLogeado.roles.size > 1) {
                     val intent = Intent(this, SeleccionRolActivity::class.java)
-                    intent.putStringArrayListExtra("roles", ArrayList(usuarioLogeado.roles))
-                    intent.putExtra("usuarioId", usuarioLogeado.usuario.id)
+                    Sesion.roles = usuarioLogeado.roles
+
+                    // 🔹 CAMBIO: guardamos en Sesion en vez de putExtra
+                    Sesion.usuarioId = usuarioLogeado.usuario.id ?: -1
+
                     startActivity(intent)
                 } else if (usuarioLogeado.roles.isNotEmpty()) {
                     val rol = usuarioLogeado.roles.first()
                     val usuarioId = usuarioLogeado.usuario.id
                     if (usuarioId != null) {
-                        navegarSegunRol(rol, usuarioId)
+                        // 🔹 CAMBIO: guardamos en Sesion
+                        Sesion.usuarioId = usuarioId
+                        Sesion.rolActivo = rol
+                        navegarSegunRol(rol)
                     } else {
-                        Toast.makeText(this, "ID de usuario no disponible", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this, "ID de usuario no disponible", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this, "El usuario no tiene roles asignados", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this, "El usuario no tiene roles asignados", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "Credenciales inválidas", Toast.LENGTH_SHORT).show()
@@ -67,26 +69,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.tvRegistro.setOnClickListener {
-            var intentVAdmin = Intent(this, activity_registro::class.java)
+            val intentVAdmin = Intent(this, activity_registro::class.java)
             startActivity(intentVAdmin)
         }
     }
 
-    private fun navegarSegunRol(rol: String, usuarioId: Int) {
+    // 🔹 CAMBIO: ya no usamos putExtra, solo navegamos
+    private fun navegarSegunRol(rol: String) {
         when (rol.lowercase()) {
-            "alumno" -> startActivity(Intent(this, AlumnosActivity::class.java).apply {
-                putExtra("usuarioId", usuarioId)
-            })
-
-            "profesor" -> startActivity(Intent(this, ProfesorActivity::class.java).apply {
-                putExtra("usuarioId", usuarioId)
-            })
-
-            "admin" -> startActivity(Intent(this, AdminActivity::class.java).apply {
-                putExtra("usuarioId", usuarioId)
-            })
+            "alumno" -> startActivity(Intent(this, AlumnosActivity::class.java))
+            "profesor" -> startActivity(Intent(this, ProfesorActivity::class.java))
+            "admin" -> startActivity(Intent(this, AdminActivity::class.java))
         }
     }
-
-
 }

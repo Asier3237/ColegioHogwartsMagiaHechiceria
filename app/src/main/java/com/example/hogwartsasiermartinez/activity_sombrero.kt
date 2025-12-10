@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hogwartsasiermartinez.Auxiliar.Sesion
 import com.example.hogwartsasiermartinez.databinding.ActivityMainBinding
 import com.example.hogwartsasiermartinez.databinding.ActivityRegistroBinding
 import com.example.hogwartsasiermartinez.databinding.ActivitySombreroBinding
@@ -32,7 +33,7 @@ class activity_sombrero : AppCompatActivity() {
 
         binding.imgSombrero.setImageResource(R.drawable.sombreroseleccionador)
 
-        val casaId = intent.getIntExtra("casaId", -1)
+        val casaId = Sesion.casaId
         Log.d("Registro", "CasaId = $casaId")
 
         val (nombreCasa, imagenResId) = when (casaId) {

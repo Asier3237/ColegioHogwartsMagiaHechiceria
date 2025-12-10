@@ -1,5 +1,6 @@
 package com.example.hogwartsasiermartinez.Api
 
+import com.example.hogwartsasiermartinez.model.Asignatura
 import com.example.hogwartsasiermartinez.model.Casa
 import com.example.hogwartsasiermartinez.model.Usuario
 import com.example.hogwartsasiermartinez.model.UsuarioLogeado
@@ -33,5 +34,18 @@ interface UserAPI {
     @GET("casas/listado")
     suspend fun getCasas(): Response<List<Casa>>
 
+    @GET("asignaturas/listado")
+    suspend fun getAsignaturas(): Response<List<Asignatura>>
+
+    @GET("usuario/profesores")
+    suspend fun getProfesores(): Response<List<Usuario>>
+
+    @POST("usuario/asignaturas/{asignaturaId}/profesor/{profesorId}")
+    suspend fun asignarProfesor(
+        @Path("asignaturaId") asignaturaId: Int,
+        @Path("profesorId") profesorId: Int
+    ): Response<Unit>
+
 }
+
 

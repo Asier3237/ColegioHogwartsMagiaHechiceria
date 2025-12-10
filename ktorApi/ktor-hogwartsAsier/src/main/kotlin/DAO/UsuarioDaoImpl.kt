@@ -11,7 +11,7 @@ object UsuarioDaoImpl {
 
     fun obtenerTodos(): List<Usuario> {
         val lista = mutableListOf<Usuario>()
-        val query = "SELECT * FROM usuario"
+        val query = "SELECT * FROM usuario WHERE id != 2"
 
         val connection = Conexion.getConnection()
         if (connection != null) {
@@ -310,6 +310,66 @@ object UsuarioDaoImpl {
         return occupancy
     }
 
+    fun listadoProfesores(): List<Usuario> {
+        val lista = mutableListOf<Usuario>()
+        val query = """
+            SELECT u.* FROM usuario u
+            JOIN usuario_rol ur ON u.id = ur.usuario_id
+            JOIN rol r ON ur.rol_id = r.id
+            WHERE r.nombre = 'profesor'
+            """.trimIndent()
+
+        val connection = Conexion.getConnection()
+        if (connection != null) {
+            try {
+                val statement = connection.prepareStatement(query)
+                val result = statement.executeQuery()
+
+                while (result.next()) {
+                    lista.add(result.toUsuario())
+                }
+
+                result.close()
+                statement.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                connection.close()
+            }
+        } else {
+            println("Error: No se pudo establecer conexión con la base de datos.")
+        }
+
+        return lista
+    }
+
+    // Dentro del objeto UsuarioDaoImpl
+
+    // EN TU PROYECTO DEL BACKEND (KTOR)
+
+    fun asignarProfesorAAsignatura(asignaturaId: Int, profesorId: Int): Boolean {
+        // --- ¡¡¡LA CORRECCIÓN ESTÁ AQUÍ!!! ---
+        // Cambiamos 'asignatura_profesor' por 'profesor_asignatura' para que coincida con tu base de datos.
+        val query = "REPLACE INTO profesor_asignatura (asignatura_id, profesor_id) VALUES (?, ?)"
+
+        // El resto del código está perfecto y no necesita cambios.
+        val connection = Conexion.getConnection() ?: return false
+
+        return try {
+            val statement = connection.prepareStatement(query)
+            statement.setInt(1, asignaturaId)
+            statement.setInt(2, profesorId)
+
+            val affectedRows = statement.executeUpdate()
+            statement.close()
+            affectedRows > 0
+        } catch (e: SQLException) {
+            println("Error en BD al asignar profesor: ${e.message}")
+            false
+        } finally {
+            connection.close()
+        }
+    }
 
 
 

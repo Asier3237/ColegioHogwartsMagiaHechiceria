@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hogwartsasiermartinez.Auxiliar.Sesion
 import com.example.hogwartsasiermartinez.databinding.ActivitySeleccionRolBinding
 
 class SeleccionRolActivity : AppCompatActivity() {
@@ -25,8 +26,8 @@ class SeleccionRolActivity : AppCompatActivity() {
             insets
         }
 
-        val roles = intent.getStringArrayListExtra("roles") ?: arrayListOf()
-        val usuarioId = intent.getIntExtra("usuarioId", -1)
+        val roles = Sesion.roles
+        val usuarioId = Sesion.usuarioId
 
         if (roles.isEmpty() || usuarioId == -1) {
             Toast.makeText(this, "No se pudieron cargar los roles", Toast.LENGTH_SHORT).show()
@@ -38,6 +39,7 @@ class SeleccionRolActivity : AppCompatActivity() {
             .setTitle("Selecciona tu rol")
             .setItems(roles.toTypedArray()) { _, which ->
                 val rolSeleccionado = roles[which]
+                Sesion.rolActivo = rolSeleccionado
                 navegarSegunRol(rolSeleccionado, usuarioId)
                 finish()
             }

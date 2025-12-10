@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hogwartsasiermartinez.Auxiliar.Sesion
 import com.example.hogwartsasiermartinez.databinding.ActivityAdminBinding
 
 class AdminActivity : AppCompatActivity() {
@@ -33,7 +34,7 @@ class AdminActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        usuarioId = intent.getIntExtra("usuarioId", -1)
+        usuarioId = Sesion.usuarioId
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -64,9 +65,7 @@ class AdminActivity : AppCompatActivity() {
         val imgPerfil = binding.toolbar.findViewById<ImageView>(R.id.imgPerfil)
         imgPerfil.setOnClickListener {
             val fragment = FragmentoPerfil().apply {
-                arguments = Bundle().apply {
-                    putInt("usuarioId", usuarioId) // aquí ya tienes el id correcto
-                }
+                usuarioId = Sesion.usuarioId
             }
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
