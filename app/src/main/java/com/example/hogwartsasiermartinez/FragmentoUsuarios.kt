@@ -1,5 +1,6 @@
 package com.example.hogwartsasiermartinez
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ class FragmentoUsuarios : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: UsuarioViewModel by viewModels()
 
+    // esta función solo infla el layout
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -30,19 +32,19 @@ class FragmentoUsuarios : Fragment() {
         return binding.root
     }
 
+    // cuando la vista ya está creada, aquí es donde se pone todo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Configurar el Adapter y el RecyclerView
+        // preparo el adapter para la lista
         val adapter = UsuarioAdapter()
         binding.recyclerUsuarios.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerUsuarios.adapter = adapter
 
-        // 2. Definir la acción para el CLIC NORMAL (Editar Rol)
+        // le digo al adapter qué hacer con el clic normal (editar rol)
         adapter.onUserClick = { usuario ->
-            // --- CAMBIO SUTIL PERO IMPORTANTE ---
-            // Usamos 'let' para asegurarnos de que el ID del usuario no es nulo
             usuario.id?.let { usuarioId ->
+                // solo un admin puede cambiar el rol, y no a sí mismo
                 if (Sesion.rolActivo == "admin" && Sesion.usuarioId != usuarioId) {
                     mostrarDialogoCambiarRol(usuario)
                 } else if (Sesion.rolActivo != "admin") {
@@ -53,37 +55,46 @@ class FragmentoUsuarios : Fragment() {
             }
         }
 
-        // 3. Definir la acción para el CLIC LARGO (Borrar Usuario)
+        // le digo al adapter qué hacer con el clic largo (borrar usuario)
         adapter.onUserLongClick = { usuario ->
-            // --- CAMBIO SUTIL PERO IMPORTANTE ---
             usuario.id?.let { usuarioId ->
                 if (Sesion.rolActivo == "admin") {
-                    // Aquí podrías mostrar un diálogo de confirmación antes de borrar
                     viewModel.deleteUser(usuarioId)
                     Toast.makeText(requireContext(), "Usuario ${usuario.nombre} eliminado", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        // 4. Observar los datos y errores del ViewModel
+        // si el usuario es admin, se mestra el botón de añadir y se pone la acción
+        if (Sesion.rolActivo == "admin") {
+            binding.fabAnadirUsuario.visibility = View.VISIBLE
+            binding.fabAnadirUsuario.setOnClickListener {
+                val intent = Intent(requireActivity(), AdminCrearUsuarioActivity::class.java)
+                startActivity(intent)
+            }
+        } else {
+            binding.fabAnadirUsuario.visibility = View.GONE
+        }
+
         setupObservers(adapter)
     }
 
+    // aquí configuro los observers que reaccionan a los datos del viewmodel
     private fun setupObservers(adapter: UsuarioAdapter) {
-        // Observador para la lista de usuarios
+        // cuando llega la lista de usuarios, la metemos en el adapter
         viewModel.usuarios.observe(viewLifecycleOwner) { usuarios ->
             adapter.submitList(usuarios)
         }
 
-        // Observador para la confirmación del cambio de rol
+        // cuando llega la señal de que el rol se ha cambiado, muestro un toast
         viewModel.actualizacionExitosa.observe(viewLifecycleOwner) { fueExitoso ->
             if (fueExitoso == true) {
                 Toast.makeText(requireContext(), "Rol actualizado correctamente", Toast.LENGTH_SHORT).show()
-                viewModel.onActualizacionCompletada() // Limpia el estado
+                viewModel.onActualizacionCompletada() // limpio el estado para que no se repita
             }
         }
 
-        // Observador para cualquier error
+        // si el viewmodel manda un error, lo muestro
         viewModel.error.observe(viewLifecycleOwner) { mensajeError ->
             if (!mensajeError.isNullOrBlank()) {
                 Toast.makeText(requireContext(), mensajeError, Toast.LENGTH_LONG).show()
@@ -91,27 +102,27 @@ class FragmentoUsuarios : Fragment() {
         }
     }
 
+    // función para el diálogo de cambiar el rol
     private fun mostrarDialogoCambiarRol(usuario: Usuario) {
         val rolesDisponibles = viewModel.roles.value
+        // si los roles aún no han llegado, aviso al usuario
         if (rolesDisponibles.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Cargando roles, inténtalo de nuevo en un segundo", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Crea un Spinner (lista desplegable) para el diálogo
+        // creo un spinner con los roles disponibles
         val spinner = Spinner(requireContext()).apply {
             adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, rolesDisponibles)
-            setPadding(50, 50, 50, 50) // Espaciado para que se vea bien
+            setPadding(50, 50, 50, 50)
         }
 
-        // Muestra el diálogo
         AlertDialog.Builder(requireContext())
             .setTitle("Cambiar rol de ${usuario.nombre}")
             .setView(spinner)
             .setPositiveButton("Guardar") { _, _ ->
                 val nuevoRol = spinner.selectedItem as String
-                // --- CAMBIO SUTIL PERO IMPORTANTE ---
-                // Nos aseguramos de que el ID no es nulo antes de llamar al ViewModel
+                // al pulsar 'guardar', pillo el rol seleccionado y llamo al viewmodel
                 usuario.id?.let { usuarioId ->
                     viewModel.cambiarRol(usuarioId, nuevoRol)
                 }
@@ -121,8 +132,15 @@ class FragmentoUsuarios : Fragment() {
             .show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // recargo la lista para que siempre esté actualizada
+        viewModel.getUsers()
+    }
+
+    // esto es importante para limpiar el binding y que no pete
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // Evita fugas de memoria
+        _binding = null
     }
 }

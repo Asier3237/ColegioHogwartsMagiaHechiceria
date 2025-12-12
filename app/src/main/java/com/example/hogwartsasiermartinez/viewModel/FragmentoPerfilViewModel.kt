@@ -12,6 +12,7 @@ class PerfilViewModel : ViewModel() {
     private val _usuario = MutableLiveData<Usuario>()
     val usuario: LiveData<Usuario> = _usuario
 
+    //carga los datos del usuario seleccionado mediante la api
     fun cargarPerfil(usuarioId: Int) {
         viewModelScope.launch {
             try {
@@ -20,7 +21,7 @@ class PerfilViewModel : ViewModel() {
                     _usuario.value = response.body()
                 }
             } catch (e: Exception) {
-                // Manejo de error
+                // manejo error
             }
         }
     }

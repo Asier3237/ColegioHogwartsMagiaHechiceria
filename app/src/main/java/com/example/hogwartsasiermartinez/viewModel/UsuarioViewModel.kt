@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.hogwartsasiermartinez.Api.UserNetwork
 import com.example.hogwartsasiermartinez.model.Usuario
 import androidx.lifecycle.viewModelScope
+import com.example.Model.UsuarioCrear
 import com.example.hogwartsasiermartinez.model.UsuarioLogeado
 import com.example.hogwartsasiermartinez.model.UsuarioLogin
 import kotlinx.coroutines.launch
@@ -35,19 +36,22 @@ class UsuarioViewModel : ViewModel() {
     private val _roles = MutableLiveData<List<String>>()
     val roles: LiveData<List<String>> get() = _roles
 
-    // Para confirmar a la vista que el rol se cambió
     private val _actualizacionExitosa = MutableLiveData<Boolean?>()
     val actualizacionExitosa: LiveData<Boolean?> get() = _actualizacionExitosa
 
-    // Para comunicar cualquier error (puedes reutilizar uno si ya lo tienes)
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
 
+    private val _creacionExitosa = MutableLiveData<Boolean?>()
+    val creacionExitosa: LiveData<Boolean?> get() = _creacionExitosa
+
+    // lista los roles y los usuarios nada más inicializar el viewModel
     init {
         getRoles()
         getUsers()
     }
 
+    // pide a la api que elija una casa según las preferencias
     fun selectHouse(preferences: List<Int>) {
         viewModelScope.launch {
             try {
@@ -67,7 +71,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
-
+    // pide la lista completa de usuarios a la api
     fun getUsers() {
         viewModelScope.launch {
             try {
@@ -81,6 +85,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // pide los datos de un solo usuario por su id
     fun getUserById(id: Int){
         viewModelScope.launch {
             try {
@@ -94,6 +99,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // manda el nombre y la contraseña a la api para hacer login
     fun login(nombre: String, pwd: String) {
         viewModelScope.launch {
             try {
@@ -111,7 +117,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
-
+    // añade un usuario nuevo desde la pantalla de registro
     fun addUser(usuario: Usuario) {
         viewModelScope.launch {
             try {
@@ -125,7 +131,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
-
+    // actualiza los datos de un usuario
     fun updateUser(id: Int, usuario: Usuario){
         viewModelScope.launch {
             try {
@@ -139,6 +145,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // borra un usuario por su id
     fun deleteUser(id: Int?){
         viewModelScope.launch {
             try {
@@ -152,10 +159,10 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // pide la lista de todos los roles a la api
     private fun getRoles() {
         viewModelScope.launch {
             try {
-                // Este endpoint lo crearemos en la API
                 val response = UserNetwork.retrofit.getRoles()
                 if (response.isSuccessful) {
                     _roles.postValue(response.body())
@@ -168,9 +175,8 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // le dice a la api que cambie el rol de un usuario
     fun cambiarRol(idUsuario: Int?, nuevoRol: String) {
-        // --- CORRECCIÓN CLAVE ---
-        // Si el idUsuario es nulo, no hacemos nada y salimos de la función.
         if (idUsuario == null) {
             _error.postValue("Error: El ID del usuario es nulo.")
             return
@@ -178,11 +184,10 @@ class UsuarioViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Ahora 'idUsuario' está garantizado que no es nulo aquí
                 val response = UserNetwork.retrofit.cambiarRol(idUsuario, nuevoRol)
                 if (response.isSuccessful) {
                     _actualizacionExitosa.postValue(true)
-                    // Recargamos la lista de usuarios para que la vista se actualice
+                    // recargamos la lista para que se vea el cambio
                     getUsers()
                 } else {
                     _error.postValue("Fallo al cambiar rol: ${response.code()}")
@@ -193,10 +198,31 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
-    // Función para limpiar el estado y evitar que el Toast de éxito se muestre repetidamente
+    // limpia el livedata de la actualización para que el mensaje no se repita
     fun onActualizacionCompletada() {
         _actualizacionExitosa.value = null
-        _error.value = null // También limpiamos el error
+        _error.value = null
+    }
+
+    // crea un usuario nuevo desde la pantalla del admin
+    fun adminCrearUsuario(datosUsuario: UsuarioCrear) {
+        viewModelScope.launch {
+            try {
+                val response = UserNetwork.retrofit.adminCrearUsuario(datosUsuario)
+                if (response.isSuccessful) {
+                    _creacionExitosa.postValue(true)
+                } else {
+                    _error.postValue("Error al crear usuario: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Error de red: ${e.message}")
+            }
+        }
+    }
+
+    // limpia el livedata de la creación
+    fun onCreacionCompletada() {
+        _creacionExitosa.value = null
     }
 
 }

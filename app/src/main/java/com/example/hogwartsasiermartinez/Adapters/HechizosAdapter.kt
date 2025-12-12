@@ -10,40 +10,42 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.hogwartsasiermartinez.R
 import com.example.hogwartsasiermartinez.model.Hechizo
 
-// --- CAMBIO CLAVE: Ahora el constructor acepta dos "listeners" ---
 class HechizosAdapter(
     private val onHechizoClick: (Hechizo) -> Unit,
-    private val onHechizoLongClick: (Hechizo) -> Unit // NUEVO
+    private val onHechizoLongClick: (Hechizo) -> Unit
 ) : ListAdapter<Hechizo, HechizosAdapter.HechizoViewHolder>(DiffCallback()) {
 
+    // aquí se crea el molde para cada fila, usando el layout item_hechizo
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HechizoViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_hechizo, parent, false)
         return HechizoViewHolder(view)
     }
 
+    // esta se encarga de rellenar cada fila con sus datos y ponerle los listeners para los clicks
     override fun onBindViewHolder(holder: HechizoViewHolder, position: Int) {
         val hechizo = getItem(position)
         holder.bind(hechizo)
 
-        // Asignamos la acción de clic normal
+        // accion click normal
         holder.itemView.setOnClickListener {
             onHechizoClick(hechizo)
         }
 
-        // --- NUEVO: Asignamos la acción de clic largo ---
+        // accion click largo
         holder.itemView.setOnLongClickListener {
             onHechizoLongClick(hechizo)
-            true // Importante para indicar que hemos manejado el evento
+            true
         }
     }
 
-    // El ViewHolder y el DiffCallback se quedan exactamente igual que los tenías
-    inner class HechizoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    // guarda las vistas de cada fila
+    class HechizoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nombreTextView: TextView = itemView.findViewById(R.id.tvNombreHechizo)
         private val descripcionTextView: TextView = itemView.findViewById(R.id.tvDescripcionHechizo)
         private val experienciaTextView: TextView = itemView.findViewById(R.id.tvExperienciaHechizo)
 
+        // esta función pone los datos de cada hechizo en los textviews de la fila
         fun bind(hechizo: Hechizo) {
             nombreTextView.text = hechizo.nombre
             descripcionTextView.text = hechizo.descripcion
@@ -51,11 +53,14 @@ class HechizosAdapter(
         }
     }
 
+    // se usa para saber que ha cambiado en la lista
     class DiffCallback : DiffUtil.ItemCallback<Hechizo>() {
+        // comprueba si dos items son el mismo (por el id)
         override fun areItemsTheSame(oldItem: Hechizo, newItem: Hechizo): Boolean {
             return oldItem.id == newItem.id
         }
 
+        // comprueba si el contenido de un item ha cambiado
         override fun areContentsTheSame(oldItem: Hechizo, newItem: Hechizo): Boolean {
             return oldItem == newItem
         }

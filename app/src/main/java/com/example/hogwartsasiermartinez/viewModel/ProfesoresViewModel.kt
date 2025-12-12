@@ -14,6 +14,7 @@ class ProfesoresViewModel : ViewModel() {
     private val _profesoresLiveData = MutableLiveData<List<Usuario>>()
     val profesoresLiveData: LiveData<List<Usuario>> get() = _profesoresLiveData
 
+    //carga una lista con todos los profesores
     fun cargarProfesores() {
         viewModelScope.launch {
             try {
@@ -31,6 +32,7 @@ class ProfesoresViewModel : ViewModel() {
         }
     }
 
+    //permite asignar un profesor a una asignatura
     fun asignarProfesor(profesorId: Int, asignaturaId: Int) {
         viewModelScope.launch {
             try {

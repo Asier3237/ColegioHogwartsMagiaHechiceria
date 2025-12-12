@@ -16,7 +16,7 @@ class CrearPocionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCrearPocionBinding
     private val viewModel: FragmentoPocionesViewModel by viewModels()
 
-    // Guardaremos los ingredientes disponibles y los que el usuario añade
+    // listas para guardar los ingredientes que hay y los que vamos añadiendo a la receta
     private var listaIngredientesDisponibles = listOf<Ingrediente>()
     private var ingredientesSeleccionados = mutableListOf<IngredientePocima>()
     private var nombresIngredientesAnadidos = mutableListOf<String>()
@@ -26,12 +26,14 @@ class CrearPocionActivity : AppCompatActivity() {
         binding = ActivityCrearPocionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // preparamos los observers y los listeners al crear la pantalla
         setupObservers()
         setupListeners()
     }
 
+    // configuramos los observers que reaccionan a los datos del viewmodel
     private fun setupObservers() {
-        // Observador para la lista de ingredientes que viene de la API
+        // cuando llega la lista de ingredientes de la api, la ponemos en el spinner
         viewModel.ingredientes.observe(this) { ingredientes ->
             listaIngredientesDisponibles = ingredientes
             val nombresIngredientes = ingredientes.map { it.nombre }
@@ -39,16 +41,15 @@ class CrearPocionActivity : AppCompatActivity() {
             binding.spinnerIngredientes.adapter = spinnerAdapter
         }
 
-        // Observador para la confirmación de la creación de la poción
         viewModel.operacionExitosa.observe(this) { mensaje ->
             mensaje?.let {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 viewModel.onOperacionCompletada()
-                finish() // Cierra la actividad y vuelve a la lista de pociones
+                finish()
             }
         }
 
-        // Observador para cualquier error
+        // si el viewmodel nos manda un error, lo mostramos en un toast
         viewModel.error.observe(this) { error ->
             error?.let {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
@@ -57,18 +58,18 @@ class CrearPocionActivity : AppCompatActivity() {
         }
     }
 
+    // configuramos las acciones de los botones
     private fun setupListeners() {
-        // Lógica del botón "Añadir" ingrediente
         binding.btnAnadirIngrediente.setOnClickListener {
             anadirIngredienteALaLista()
         }
 
-        // Lógica del botón final "Crear Poción"
         binding.btnCrearPocion.setOnClickListener {
             crearPocion()
         }
     }
 
+    // esta función añade un ingrediente a la lista que ve el usuario
     private fun anadirIngredienteALaLista() {
         if (listaIngredientesDisponibles.isEmpty()) return
 
@@ -76,11 +77,10 @@ class CrearPocionActivity : AppCompatActivity() {
         val ingredienteSeleccionado = listaIngredientesDisponibles[posicionSeleccionada]
         val cantidad = binding.etCantidad.text.toString().toIntOrNull() ?: 1
 
-        // Añadimos el ingrediente a nuestra lista de "receta"
+        // añadimos el ingrediente a la lista de datos y la de nombres para mostrar
         ingredientesSeleccionados.add(IngredientePocima(ingredienteSeleccionado.id, cantidad))
         nombresIngredientesAnadidos.add("${ingredienteSeleccionado.nombre} (x$cantidad)")
 
-        // Actualizamos el TextView para que el usuario vea lo que ha añadido
         binding.tvIngredientesAnadidos.visibility = android.view.View.VISIBLE
         binding.tvIngredientesAnadidos.text = "Ingredientes añadidos:\n" + nombresIngredientesAnadidos.joinToString("\n")
     }
@@ -90,6 +90,7 @@ class CrearPocionActivity : AppCompatActivity() {
         val resumen = binding.etResumenPocion.text.toString()
         val creadorId = Sesion.usuarioId
 
+        // comprobamos que todo esté relleno
         if (nombre.isBlank()) {
             Toast.makeText(this, "El nombre de la poción no puede estar vacío", Toast.LENGTH_SHORT).show()
             return
@@ -103,7 +104,6 @@ class CrearPocionActivity : AppCompatActivity() {
             return
         }
 
-        // Llamamos al ViewModel para que envíe la poción al servidor
         viewModel.crearPocion(nombre, resumen, creadorId, ingredientesSeleccionados)
     }
 }

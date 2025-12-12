@@ -3,6 +3,7 @@ package DAO
 import Database.Conexion
 import Model.Usuario
 import Model.UsuarioLogeado
+import com.example.Model.UsuarioCrear
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Statement
@@ -261,10 +262,10 @@ object UsuarioDaoImpl {
 
                     // Color según casa
                     val coloresCasa = mapOf(
-                        1 to "#FFD700", // Gryffindor
+                        1 to "#A52A2A", // Gryffindor
                         2 to "#008000", // Slytherin
                         3 to "#0000FF", // Ravenclaw
-                        4 to "#A52A2A"  // Hufflepuff
+                        4 to "#FFD700"  // Hufflepuff
                     )
                     val color = coloresCasa[usuario.casa_id] ?: "#CCCCCC"
 
@@ -343,16 +344,9 @@ object UsuarioDaoImpl {
         return lista
     }
 
-    // Dentro del objeto UsuarioDaoImpl
-
-    // EN TU PROYECTO DEL BACKEND (KTOR)
-
     fun asignarProfesorAAsignatura(asignaturaId: Int, profesorId: Int): Boolean {
-        // --- ¡¡¡LA CORRECCIÓN ESTÁ AQUÍ!!! ---
-        // Cambiamos 'asignatura_profesor' por 'profesor_asignatura' para que coincida con tu base de datos.
         val query = "REPLACE INTO profesor_asignatura (asignatura_id, profesor_id) VALUES (?, ?)"
 
-        // El resto del código está perfecto y no necesita cambios.
         val connection = Conexion.getConnection() ?: return false
 
         return try {
@@ -383,21 +377,19 @@ object UsuarioDaoImpl {
                 roles.add(resultSet.getString("nombre"))
             }
             statement.close()
-            roles // Devuelve la lista de nombres de roles
+            roles
         } catch (e: SQLException) {
             println("Error en BD al obtener roles: ${e.message}")
-            emptyList() // Devuelve una lista vacía si hay un error
+            emptyList()
         } finally {
             connection.close()
         }
     }
 
-    // --- FUNCIÓN NUEVA PARA CAMBIAR EL ROL DE UN USUARIO ---
     fun cambiarRolDeUsuario(usuarioId: Int, nombreNuevoRol: String): Boolean {
         val connection = Conexion.getConnection() ?: return false
 
         return try {
-            // 1. Buscamos el ID del nuevo rol a partir de su nombre
             val rolIdQuery = "SELECT id FROM rol WHERE nombre = ?"
             val rolIdStatement = connection.prepareStatement(rolIdQuery)
             rolIdStatement.setString(1, nombreNuevoRol)
@@ -406,13 +398,11 @@ object UsuarioDaoImpl {
             if (!rolIdResult.next()) {
                 println("El rol '$nombreNuevoRol' no existe.")
                 rolIdStatement.close()
-                return false // Si el rol no se encuentra, no podemos continuar
+                return false
             }
             val idDelNuevoRol = rolIdResult.getInt("id")
             rolIdStatement.close()
 
-            // 2. Usamos REPLACE INTO para actualizar o insertar el rol del usuario
-            // en la tabla intermedia 'usuario_rol'.
             val updateQuery = "REPLACE INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)"
             val updateStatement = connection.prepareStatement(updateQuery)
             updateStatement.setInt(1, usuarioId)
@@ -421,7 +411,7 @@ object UsuarioDaoImpl {
             val affectedRows = updateStatement.executeUpdate()
             updateStatement.close()
 
-            affectedRows > 0 // Devuelve 'true' si se modificó al menos una fila
+            affectedRows > 0
         } catch (e: SQLException) {
             println("Error en BD al cambiar rol: ${e.message}")
             false
@@ -429,6 +419,65 @@ object UsuarioDaoImpl {
             connection.close()
         }
     }
+
+    fun crearUsuario(datosUsuario: UsuarioCrear): Boolean {
+        val connection = Conexion.getConnection() ?: return false
+        connection.autoCommit = false
+
+        try {
+            val userQuery = "INSERT INTO usuario (nombre, password, casa_id, nivel, experiencia) VALUES (?, ?, ?, ?, ?)"
+            val userStatement = connection.prepareStatement(userQuery, java.sql.Statement.RETURN_GENERATED_KEYS)
+            userStatement.setString(1, datosUsuario.nombre)
+            userStatement.setString(2, datosUsuario.password)
+            userStatement.setInt(3, datosUsuario.casaId)
+            userStatement.setInt(4, datosUsuario.nivel)
+            userStatement.setInt(5, datosUsuario.experiencia)
+            userStatement.executeUpdate()
+
+            val generatedKeys = userStatement.generatedKeys
+            if (!generatedKeys.next()) {
+                println("ERROR: No se pudo obtener el ID del nuevo usuario.")
+                connection.rollback()
+                return false
+            }
+            val nuevoUsuarioId = generatedKeys.getInt(1)
+            userStatement.close()
+
+            val rolIdQuery = "SELECT id FROM rol WHERE nombre = ?"
+            val rolIdStatement = connection.prepareStatement(rolIdQuery)
+            rolIdStatement.setString(1, datosUsuario.rol)
+            val rolIdResult = rolIdStatement.executeQuery()
+
+            if (!rolIdResult.next()) {
+                println("ERROR: El rol '${datosUsuario.rol}' no existe.")
+                connection.rollback()
+                return false
+            }
+            val rolId = rolIdResult.getInt("id")
+            rolIdStatement.close()
+
+            val rolQuery = "INSERT INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)"
+            val rolStatement = connection.prepareStatement(rolQuery)
+            rolStatement.setInt(1, nuevoUsuarioId)
+            rolStatement.setInt(2, rolId)
+            val affectedRows = rolStatement.executeUpdate()
+            rolStatement.close()
+
+            connection.commit()
+            return affectedRows > 0
+
+        } catch (e: SQLException) {
+            println("Error en BD al crear usuario: ${e.message}")
+            e.printStackTrace()
+            connection.rollback()
+            return false
+        } finally {
+            connection.autoCommit = true
+            connection.close()
+        }
+    }
+
+
 
     private fun ResultSet.toUsuario(): Usuario = Usuario(
         id = getInt("id"),

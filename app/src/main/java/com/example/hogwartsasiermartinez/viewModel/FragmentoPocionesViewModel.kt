@@ -11,26 +11,26 @@ import kotlinx.coroutines.launch
 
 class FragmentoPocionesViewModel : ViewModel() {
 
-    // --- LiveData para la UI ---
     private val _pociones = MutableLiveData<List<Pocima>>()
     val pociones: LiveData<List<Pocima>> get() = _pociones
 
     private val _ingredientes = MutableLiveData<List<Ingrediente>>()
     val ingredientes: LiveData<List<Ingrediente>> get() = _ingredientes
 
+    //livedata para verificar que ha ido bien
     private val _operacionExitosa = MutableLiveData<String?>()
     val operacionExitosa: LiveData<String?> get() = _operacionExitosa
 
+    //livedata para mostrar errores
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
 
+    //la lista de ingredientes se carga nada más inicializar el fragmento
     init {
-        // Cargar los ingredientes una sola vez al inicio
         cargarIngredientes()
     }
 
-    // --- Funciones para interactuar con la API ---
-
+    //carga la lista de pociones de la bd, dependiendo del rol del usuario
     fun cargarPociones(rol: String, usuarioId: Int) {
         viewModelScope.launch {
             try {
@@ -46,6 +46,7 @@ class FragmentoPocionesViewModel : ViewModel() {
         }
     }
 
+    //carga los ingredientes de la bd
     private fun cargarIngredientes() {
         viewModelScope.launch {
             try {
@@ -59,6 +60,7 @@ class FragmentoPocionesViewModel : ViewModel() {
         }
     }
 
+    //permite crear una poción a los alumnos
     fun crearPocion(nombre: String, resumen: String, creadorId: Int, ingredientes: List<IngredientePocima>) {
         viewModelScope.launch {
             val pocimaData = PocimaCrear(nombre, resumen, creadorId, ingredientes)
@@ -75,6 +77,7 @@ class FragmentoPocionesViewModel : ViewModel() {
         }
     }
 
+    //permite tanto a profesores ocmo a los admin validar las pociones pendientes
     fun validarPocion(pocionId: Int, esValidada: Boolean) {
         val nuevoEstado = if (esValidada) 1 else 2 // 1 = validada, 2 = rechazada
         viewModelScope.launch {
@@ -91,6 +94,7 @@ class FragmentoPocionesViewModel : ViewModel() {
         }
     }
 
+    //permite borrar pociones de la bd
     fun borrarPocion(pocionId: Int) {
         viewModelScope.launch {
             try {
@@ -106,7 +110,7 @@ class FragmentoPocionesViewModel : ViewModel() {
         }
     }
 
-    // Función para limpiar los mensajes y evitar que se muestren de nuevo
+    // simplemente daje las dos livedata vacías para que no haya fallos en los mensajes
     fun onOperacionCompletada() {
         _operacionExitosa.value = null
         _error.value = null

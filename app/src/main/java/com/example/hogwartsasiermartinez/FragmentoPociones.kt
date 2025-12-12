@@ -22,22 +22,25 @@ class FragmentoPociones : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: FragmentoPocionesViewModel by viewModels()
 
+    // esta función solo infla el layout
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentFragmentoPocionesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    // cuando la vista ya está creada, aquí es donde se pone todo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // preparamos el adapter y le decimos qué hacer cuando se pulsa un item
         val adapter = PocionesAdapter(
-            // Clic normal: para profesores
+            // clic normal: si eres profe, puedes validar una poción pendiente
             onPocionClick = { pocion ->
                 if (Sesion.rolActivo == "profesor" && pocion.validada == 0) {
                     mostrarDialogoValidar(pocion)
                 }
             },
-            // Clic largo: para admins
+            // clic largo: si eres admin, puedes borrarla
             onPocionLongClick = { pocion ->
                 if (Sesion.rolActivo == "admin") {
                     mostrarDialogoBorrar(pocion)
@@ -48,41 +51,47 @@ class FragmentoPociones : Fragment() {
         binding.recyclerPociones.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerPociones.adapter = adapter
 
+        // pongo visible o no el botón flotante según el rol
         configurarVisibilidadPorRol()
         setupObservers(adapter)
 
-        // El botón flotante abre la nueva activity para crear pociones
+        // la acción para el botón flotante, que abre la pantalla de crear pociones
         binding.fabCrearPocion.setOnClickListener {
-             val intent = Intent(requireActivity(), CrearPocionActivity::class.java)
-             startActivity(intent)
+            val intent = Intent(requireActivity(), CrearPocionActivity::class.java)
+            startActivity(intent)
         }
     }
 
+    // esto se llama siempre que volvemos a esta pantalla
     override fun onResume() {
         super.onResume()
-        // Recargamos las pociones cada vez que el fragmento se vuelve visible
+        // recargo la lista de pociones para que siempre esté actualizada
         viewModel.cargarPociones(Sesion.rolActivo ?: "", Sesion.usuarioId ?: 0)
     }
 
+    // esta función decide si se ve el botón de crear o no
     private fun configurarVisibilidadPorRol() {
-        // El botón de crear solo es visible para alumnos
         binding.fabCrearPocion.visibility = if (Sesion.rolActivo == "alumno") View.VISIBLE else View.GONE
     }
 
+    // aquí configuramos los observers que reaccionan a los datos del viewmodel
     private fun setupObservers(adapter: PocionesAdapter) {
+        // cuando llega la lista de pociones se mete en el adapter
         viewModel.pociones.observe(viewLifecycleOwner) { pociones ->
             adapter.submitList(pociones)
         }
 
+        // cuando llega una señal de que algo ha ido bien, muestro un toast y recargo la lista
         viewModel.operacionExitosa.observe(viewLifecycleOwner) { mensaje ->
             mensaje?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                // Recargamos la lista para ver los cambios
+                // recargamos la lista para ver los cambios al instante
                 viewModel.cargarPociones(Sesion.rolActivo ?: "", Sesion.usuarioId ?: 0)
                 viewModel.onOperacionCompletada()
             }
         }
 
+        // si el viewmodel manda un error, lo muestro
         viewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
@@ -91,24 +100,24 @@ class FragmentoPociones : Fragment() {
         }
     }
 
-    // Diálogo para que el profesor valide o rechace
+    // diálogo para que el profesor valide o rechace una poción
     private fun mostrarDialogoValidar(pocion: Pocima) {
         val esBuena = if (pocion.tipo == "buena") "Buena" else "Mala"
         AlertDialog.Builder(requireContext())
             .setTitle("Validar Poción: ${pocion.nombre}")
             .setMessage("Esta poción ha sido evaluada como: $esBuena.\n\n¿Qué quieres hacer?")
             .setPositiveButton("Validar") { _, _ ->
-                viewModel.validarPocion(pocion.id, true) // true = validar
+                viewModel.validarPocion(pocion.id, true) // true para validar
             }
             .setNegativeButton("Rechazar") { _, _ ->
-                viewModel.validarPocion(pocion.id, false) // false = rechazar
+                viewModel.validarPocion(pocion.id, false) // false para rechazar
             }
             .setNeutralButton("Cancelar", null)
             .create()
             .show()
     }
 
-    // Diálogo para que el admin borre
+    // el diálogo para confirmar que el admin quiere borrar una poción
     private fun mostrarDialogoBorrar(pocion: Pocima) {
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar Poción")
@@ -121,6 +130,7 @@ class FragmentoPociones : Fragment() {
             .show()
     }
 
+    // esto es importante para limpiar el binding y que no pete
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

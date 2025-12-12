@@ -19,23 +19,22 @@ class FragmentoAsignaturasViewModel : ViewModel() {
     private val _asignaturasLiveData = MutableLiveData<List<Asignatura>>()
     val asignaturasLiveData: LiveData<List<Asignatura>> get() = _asignaturasLiveData
 
-    // LiveData para la lista de usuarios que son profesores
-    // Usamos la clase Usuario, ya que no existe la clase Profesor
+    // LiveData para la lista de profesores
     private val _profesoresLiveData = MutableLiveData<List<Usuario>>()
     val profesoresLiveData: LiveData<List<Usuario>> get() = _profesoresLiveData
 
-    // LiveData para comunicar errores a la UI
+    // LiveData para los errores
     private val _errorLiveData = MutableLiveData<String>()
     val errorLiveData: LiveData<String> get() = _errorLiveData
 
-    // LiveData para notificar a la UI que la asignación fue exitosa
+    // LiveData para verificar que se hizoo bien
     private val _asignacionExitosa = MutableLiveData<Boolean>()
     val asignacionExitosa: LiveData<Boolean> get() = _asignacionExitosa
 
+    //carga todas las asignaturas desde la api
     fun cargarAsignaturas() {
         viewModelScope.launch {
             try {
-                // Llama a la API para obtener todas las asignaturas
                 val response = UserNetwork.retrofit.getAsignaturas()
                 if (response.isSuccessful && response.body() != null) {
                     _asignaturasLiveData.postValue(response.body())
@@ -44,17 +43,17 @@ class FragmentoAsignaturasViewModel : ViewModel() {
                     Log.e("AsignaturasVM", "Error al cargar asignaturas: ${response.code()}")
                 }
             } catch (e: Exception) {
-                _errorLiveData.postValue("Excepción al cargar asignaturas: ${e.message}")
+                _errorLiveData.postValue("Excepción al cargar asignaturas: ${e.message}") // se le asigna valor por el posible error
                 Log.e("AsignaturasVM", "Excepción: ${e.message}")
             }
         }
     }
 
+    //carga lista de profesores desde la api
     fun cargarProfesores() {
         viewModelScope.launch {
             try {
-                // Llama a la API para obtener solo los usuarios con rol "profesor"
-                val response = UserNetwork.retrofit.getProfesores() // ¡IMPORTANTE! Esta función debe existir en tu ApiService
+                val response = UserNetwork.retrofit.getProfesores()
                 if (response.isSuccessful && response.body() != null) {
                     _profesoresLiveData.postValue(response.body())
                     Log.d("ViewModel", "Profesores cargados: ${response.body()?.size ?: 0}")
@@ -69,11 +68,10 @@ class FragmentoAsignaturasViewModel : ViewModel() {
         }
     }
 
-    // Método para realizar la asignación
+    // Realiza la asignación de profesores en la bd, comunicandose con la api
     fun asignarProfesorAAsignatura(idAsignatura: Int, idProfesor: Int) {
         viewModelScope.launch {
             try {
-                // Retrofit convertirá los Int a String si es necesario para la URL
                 val response = UserNetwork.retrofit.asignarProfesor(idAsignatura, idProfesor)
 
                 if (response.isSuccessful) {

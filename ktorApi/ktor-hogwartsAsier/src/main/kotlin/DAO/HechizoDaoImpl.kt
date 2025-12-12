@@ -6,7 +6,6 @@ import java.sql.SQLException
 
 object HechizoDaoImpl {
 
-    // --- FUNCIÓN PARA OBTENER TODOS LOS HECHIZOS ---
     fun getTodosLosHechizos(): List<Hechizo> {
         val query = "SELECT * FROM hechizo"
         val connection = Conexion.getConnection() ?: return emptyList()
@@ -33,7 +32,6 @@ object HechizoDaoImpl {
         return hechizos
     }
 
-    // --- FUNCIÓN PARA CREAR UN NUEVO HECHIZO ---
     fun crearHechizo(nombre: String, descripcion: String, experiencia: Int): Boolean {
         val query = "INSERT INTO hechizo (nombre, descripcion, experiencia) VALUES (?, ?, ?)"
         val connection = Conexion.getConnection() ?: return false
@@ -53,14 +51,11 @@ object HechizoDaoImpl {
         }
     }
 
-    // --- FUNCIÓN PARA QUE UN ALUMNO APRENDA UN HECHIZO ---
     fun aprenderHechizo(alumnoId: Int, hechizoId: Int): Boolean {
         val connection = Conexion.getConnection() ?: return false
-        // Iniciamos una transacción. O se hace todo, o no se hace nada.
         connection.autoCommit = false
 
         try {
-            // --- Paso 1: Comprobar si el alumno ya sabe el hechizo ---
             val checkQuery = "SELECT COUNT(*) FROM alumno_hechizo WHERE alumno_id = ? AND hechizo_id = ?"
             val checkStatement = connection.prepareStatement(checkQuery)
             checkStatement.setInt(1, alumnoId)
@@ -68,12 +63,11 @@ object HechizoDaoImpl {
             val resultSet = checkStatement.executeQuery()
             if (resultSet.next() && resultSet.getInt(1) > 0) {
                 println("El alumno ya conoce este hechizo. No se suman puntos.")
-                connection.rollback() // Cancelamos la transacción
-                return true // Devolvemos 'true' porque la operación no falló, simplemente no hizo nada.
+                connection.rollback()
+                return true
             }
             checkStatement.close()
 
-            // --- Paso 2: Obtener la experiencia del hechizo y la casa del alumno ---
             val dataQuery = "SELECT h.experiencia, u.casa_id FROM hechizo h, usuario u WHERE h.id = ? AND u.id = ?"
             val dataStatement = connection.prepareStatement(dataQuery)
             dataStatement.setInt(1, hechizoId)
@@ -89,7 +83,6 @@ object HechizoDaoImpl {
             val casaId = dataResult.getInt("casa_id")
             dataStatement.close()
 
-            // --- Paso 3: Registrar que el alumno ha aprendido el hechizo ---
             val insertQuery = "INSERT INTO alumno_hechizo (alumno_id, hechizo_id, fecha_aprendizaje) VALUES (?, ?, NOW())"
             val insertStatement = connection.prepareStatement(insertQuery)
             insertStatement.setInt(1, alumnoId)
@@ -97,7 +90,6 @@ object HechizoDaoImpl {
             insertStatement.executeUpdate()
             insertStatement.close()
 
-            // --- Paso 4: Actualizar la experiencia del propio alumno ---
             val updateUserQuery = "UPDATE usuario SET experiencia = experiencia + ? WHERE id = ?"
             val updateUserStatement = connection.prepareStatement(updateUserQuery)
             updateUserStatement.setInt(1, experienciaGanada)
@@ -105,7 +97,6 @@ object HechizoDaoImpl {
             updateUserStatement.executeUpdate()
             updateUserStatement.close()
 
-            // --- Paso 5: Actualizar los puntos de la casa del alumno ---
             val updateCasaQuery = "UPDATE casa SET puntos = puntos + ? WHERE id = ?"
             val updateCasaStatement = connection.prepareStatement(updateCasaQuery)
             updateCasaStatement.setInt(1, experienciaGanada)
@@ -113,17 +104,16 @@ object HechizoDaoImpl {
             updateCasaStatement.executeUpdate()
             updateCasaStatement.close()
 
-            // --- Finalizar ---
             connection.commit() // Si todo ha ido bien, confirmamos todos los cambios.
             println("Éxito: Alumno $alumnoId aprendió hechizo $hechizoId. Se sumaron $experienciaGanada puntos a él y a su casa.")
             return true
 
         } catch (e: SQLException) {
             println("Error en BD al aprender hechizo: ${e.message}")
-            connection.rollback() // Si algo falla, revertimos todos los cambios.
+            connection.rollback()
             return false
         } finally {
-            connection.autoCommit = true // Devolvemos la conexión a su estado normal.
+            connection.autoCommit = true
             connection.close()
         }
     }
@@ -136,7 +126,7 @@ object HechizoDaoImpl {
             statement.setInt(1, hechizoId)
             val affectedRows = statement.executeUpdate()
             statement.close()
-            affectedRows > 0 // Devuelve 'true' si se borró al menos una fila
+            affectedRows > 0
         } catch (e: SQLException) {
             println("Error en BD al borrar hechizo: ${e.message}")
             false

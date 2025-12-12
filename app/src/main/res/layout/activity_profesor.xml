@@ -5,31 +5,14 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminActivity">
+    tools:context=".ProfesorActivity">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--        &lt;!&ndash; Cabecera Hogwarts &ndash;&gt;-->
-        <!--        <LinearLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="#3C1F0E"-->
-        <!--            android:gravity="center">-->
-
-        <!--            <TextView-->
-        <!--                android:id="@+id/tvTitulo"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:fontFamily="serif"-->
-        <!--                android:text="COLEGIO HOGWARTS"-->
-        <!--                android:textColor="#FFFFFF"-->
-        <!--                android:textSize="28sp"/>-->
-        <!--        </LinearLayout>-->
-
-        <!-- Toolbar con botón perfil -->
+        <!-- Toolbar con botón perfil (Sin cambios) -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -41,7 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <!-- Título centrado -->
                 <TextView
                     android:id="@+id/tvTituloToolbar"
                     android:layout_width="wrap_content"
@@ -52,7 +34,6 @@
                     android:fontFamily="serif"
                     android:layout_centerInParent="true"/>
 
-                <!-- Icono de perfil a la derecha -->
                 <ImageView
                     android:id="@+id/imgPerfil"
                     android:layout_width="32dp"
@@ -65,15 +46,24 @@
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
 
-        <!-- Contenedor de fragmentos -->
+        <!-- Contenedor de fragmentos (CAMBIO: ajustado con layout_weight) -->
         <FrameLayout
             android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="#FFFFFF"/>
+
+        <!-- AÑADIDO: La nueva barra de navegación inferior -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:menu="@menu/alumno_bottom_nav_menu" />
+
     </LinearLayout>
 
-    <!-- Menú lateral -->
+    <!-- Menú lateral (Sin cambios) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
         android:layout_width="wrap_content"

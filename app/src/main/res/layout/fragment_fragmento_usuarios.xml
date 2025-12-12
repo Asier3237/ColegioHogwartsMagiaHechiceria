@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FragmentoUsuarios">
 
-    <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    <!-- El RecyclerView ocupará toda la pantalla y mostrará la lista de usuarios -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerUsuarios"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_usuario" />
 
+    <!--
+        El FloatingActionButton para añadir nuevos usuarios.
+        - El ID 'fabAnadirUsuario' coincide con el que usas en tu código.
+        - Inicialmente lo ponemos como 'gone'. El fragmento lo hará visible si el rol es "admin".
+    -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-    android:id="@+id/btnAddUsuario"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:contentDescription="Añadir Usuario"
-    android:src="@drawable/ic_add"
-    app:backgroundTint="#3C1F0E"
-    android:layout_gravity="bottom|end"
-    android:layout_margin="16dp"/>
+        android:id="@+id/fabAnadirUsuario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Añadir nuevo usuario"
+        android:src="@drawable/ic_add"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -37,18 +37,22 @@ class activity_registro : AppCompatActivity() {
             insets
         }
 
+        // preparamos el adapter para la lista de casas
         val adapter = CasasAdapter(mutableListOf())
         binding.recyclerCasas.adapter = adapter
         binding.recyclerCasas.layoutManager = LinearLayoutManager(this)
 
+        // instanciamos el helper para poder arrastrar y soltar filas
         val touchHelper = ItemTouchHelper(DragHelper(adapter))
         touchHelper.attachToRecyclerView(binding.recyclerCasas)
 
+        // observamos el livedata de las casas para cuando lleguen los datos
         casasViewModel.casasLiveData.observe(this) { casas ->
             Log.d("Registro", "Casas recibidas: ${casas.size}")
+            // cuando llegan, limpiamos la lista y metemos las nuevas mpor si cambia algo respecto a las anteriores
             adapter.casas.clear()
             adapter.casas.addAll(casas)
-            adapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged() // se notifica al adapter para repintar la lista
         }
 
         casasViewModel.cargarCasas()
@@ -56,15 +60,19 @@ class activity_registro : AppCompatActivity() {
         binding.btRegistro.setOnClickListener {
             val nombre = binding.etNombreReg.text.toString()
             val passwd = binding.etPasswdReg.text.toString()
+            // pillamos el orden final en el que el usuario ha dejado las casas
             val ordenFinalIds = adapter.getOrdenCasasId()
 
+            // mandamos las preferencias a la api y guardamos los datos
             viewModel.selectHouse(ordenFinalIds)
             viewModel.nombreAux = nombre
             viewModel.passwdAux = passwd
         }
 
+        // observamos la respuesta del sombrero, que nos devuelve el id de la casa
         viewModel.casaSeleccionadaId.observe(this) { casaId ->
             if (casaId != null && casaId > 0) {
+                // creamos el objeto usuario con todos los datos
                 val usuario = Usuario(
                     nombre = viewModel.nombreAux.toString(),
                     password = viewModel.passwdAux.toString(),
@@ -74,7 +82,7 @@ class activity_registro : AppCompatActivity() {
                 )
                 viewModel.addUser(usuario)
 
-                // 🔹 CAMBIO: guardamos en Sesion en vez de putExtra
+                // guardamos el id de la casa en la sesión para usarlo después
                 Sesion.casaId = casaId
 
                 val intentVSombrero = Intent(this, activity_sombrero::class.java)
@@ -83,4 +91,3 @@ class activity_registro : AppCompatActivity() {
         }
     }
 }
-

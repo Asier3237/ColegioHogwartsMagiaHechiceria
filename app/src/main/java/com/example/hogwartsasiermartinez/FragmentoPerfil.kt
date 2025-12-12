@@ -17,6 +17,7 @@ class FragmentoPerfil : Fragment() {
     private lateinit var binding: FragmentFragmentoPerfilBinding
     private val viewModel: PerfilViewModel by viewModels()
 
+    // esta función solo infla el layout
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -25,17 +26,21 @@ class FragmentoPerfil : Fragment() {
         return binding.root
     }
 
+    // cuando la vista ya está creada, aquí es donde se pone todo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // pillo el id del usuario que ha iniciado sesión
         val usuarioId = Sesion.usuarioId
         viewModel.cargarPerfil(usuarioId)
 
         viewModel.usuario.observe(viewLifecycleOwner) { usuario ->
+            // cuando llegan los datos, los pinto en los textviews
             binding.tvNombre.text = usuario.nombre
             binding.tvNivel.text = "Nivel: ${usuario.nivel ?: 0}"
             binding.tvExperiencia.text = "Experiencia: ${usuario.experiencia ?: 0}"
 
+            // según el id de la casa, pongo el nombre y la foto que toca
             if (usuario.casa_id == 1) {
                 binding.tvCasa.text = "Casa: Gryffindor"
                 binding.imgCasa.setImageResource(R.drawable.gryffindor)
@@ -55,8 +60,10 @@ class FragmentoPerfil : Fragment() {
         }
 
         binding.btnCerrarSesion.setOnClickListener {
+            // creo un intent para volver a la pantalla de login
             val intentVMain = Intent(activity, MainActivity::class.java)
             startActivity(intentVMain)
+            // y muestro un mensaje para que el usuario sepa que ha salido
             Toast.makeText(requireContext(), "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show()
         }
 

@@ -3,6 +3,7 @@ package com.example.hogwartsasiermartinez.Api
 import com.example.Model.Ingrediente
 import com.example.Model.Pocima
 import com.example.Model.PocimaCrear
+import com.example.Model.UsuarioCrear
 import com.example.hogwartsasiermartinez.model.Asignatura
 import com.example.hogwartsasiermartinez.model.Casa
 import com.example.hogwartsasiermartinez.model.Hechizo
@@ -59,6 +60,15 @@ interface UserAPI {
         @Path("id") idUsuario: Int?,
         @Query("nuevoRol") nuevoRol: String
     ): Response<Unit>
+
+    // --- Endpoint para que un Admin cree un Usuario ---
+    @POST("usuario/crearUsuario")
+    suspend fun adminCrearUsuario(@Body usuarioData: UsuarioCrear): Response<Unit>
+
+    // --- Endpoint para obtener el Ranking de Casas ---
+    @GET("casas/ranking")
+    suspend fun getRankingCasas(): Response<List<Casa>>
+
 
     // --- Endpoints para Hechizos ---
 

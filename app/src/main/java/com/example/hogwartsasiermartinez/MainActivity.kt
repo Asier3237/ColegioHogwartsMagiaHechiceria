@@ -45,17 +45,17 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, SeleccionRolActivity::class.java)
                     Sesion.roles = usuarioLogeado.roles
 
-                    // 🔹 CAMBIO: guardamos en Sesion en vez de putExtra
                     Sesion.usuarioId = usuarioLogeado.usuario.id ?: -1
+                    Sesion.colorCasa = usuarioLogeado.colorCasa
 
                     startActivity(intent)
                 } else if (usuarioLogeado.roles.isNotEmpty()) {
                     val rol = usuarioLogeado.roles.first()
                     val usuarioId = usuarioLogeado.usuario.id
                     if (usuarioId != null) {
-                        // 🔹 CAMBIO: guardamos en Sesion
                         Sesion.usuarioId = usuarioId
                         Sesion.rolActivo = rol
+                        Sesion.colorCasa = usuarioLogeado.colorCasa
                         navegarSegunRol(rol)
                     } else {
                         Toast.makeText(this, "ID de usuario no disponible", Toast.LENGTH_SHORT).show()
@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 🔹 CAMBIO: ya no usamos putExtra, solo navegamos
     private fun navegarSegunRol(rol: String) {
         when (rol.lowercase()) {
             "alumno" -> startActivity(Intent(this, AlumnosActivity::class.java))

@@ -8,14 +8,11 @@ import java.sql.SQLException
 
 object PocimasDaoImpl {
 
-    // --- FUNCIONES PARA POCIONES ---
-
-    // Obtiene las pociones según el rol del usuario
     fun getPociones(rol: String, usuarioId: Int): List<Pocima> {
         val query = when (rol) {
-            "alumno" -> "SELECT * FROM pocimas WHERE creador_id = ? AND fecha_borrado IS NULL" // Solo sus pociones activas
-            "profesor" -> "SELECT * FROM pocimas WHERE validada = 0 AND fecha_borrado IS NULL" // Solo las pendientes
-            "admin" -> "SELECT * FROM pocimas WHERE fecha_borrado IS NULL" // Todas las activas
+            "alumno" -> "SELECT * FROM pocimas WHERE creador_id = ? AND fecha_borrado IS NULL"
+            "profesor" -> "SELECT * FROM pocimas WHERE validada = 0 AND fecha_borrado IS NULL"
+            "admin" -> "SELECT * FROM pocimas WHERE fecha_borrado IS NULL"
             else -> return emptyList()
         }
 
@@ -47,7 +44,6 @@ object PocimasDaoImpl {
         return pociones
     }
 
-    // Obtiene todos los ingredientes disponibles
     fun getIngredientes(): List<Ingrediente> {
         val query = "SELECT * FROM ingrediente"
         val connection = Conexion.getConnection() ?: return emptyList()
@@ -75,14 +71,11 @@ object PocimasDaoImpl {
         return ingredientes
     }
 
-    // Lógica para crear una nueva poción
-    // Reemplaza tu función 'crearPocion' completa en el DAO del backend por esta
     fun crearPocion(pocimaData: PocimaCrear): Boolean {
         val connection = Conexion.getConnection() ?: return false
-        connection.autoCommit = false // Iniciamos transacción
+        connection.autoCommit = false
 
         try {
-            // --- 1. Calcular la validación automática (esto estaba bien) ---
             var sumaValores = 0
             for (ingredientePocima in pocimaData.ingredientes) {
                 val ingQuery = "SELECT (analgesia + curativo + desinflamatorio + sanacion) as total_valor FROM ingrediente WHERE id = ?"
@@ -96,7 +89,6 @@ object PocimasDaoImpl {
             }
             val tipoPocion = if (sumaValores >= 0) "buena" else "mala"
 
-            // --- 2. Crear la poción en la tabla 'pocimas' (esto estaba bien) ---
             val pocimaQuery = "INSERT INTO pocimas (nombre, resumen, creador_id, tipo) VALUES (?, ?, ?, ?)"
             val pocimaStatement = connection.prepareStatement(pocimaQuery, java.sql.Statement.RETURN_GENERATED_KEYS)
             pocimaStatement.setString(1, pocimaData.nombre)
@@ -108,12 +100,11 @@ object PocimasDaoImpl {
             val generatedKeys = pocimaStatement.generatedKeys
             if (!generatedKeys.next()) {
                 connection.rollback()
-                return false // No se pudo obtener el ID de la nueva poción
+                return false
             }
             val nuevaPocimaId = generatedKeys.getInt(1)
             pocimaStatement.close()
 
-            // --- 3. Guardar los ingredientes en 'pocima_ingrediente' (esto estaba bien) ---
             val pocimaIngredienteQuery = "INSERT INTO pocima_ingrediente (pocima_id, ingrediente_id, cantidad) VALUES (?, ?, ?)"
             for (ingredientePocima in pocimaData.ingredientes) {
                 val piStatement = connection.prepareStatement(pocimaIngredienteQuery)
@@ -124,8 +115,6 @@ object PocimasDaoImpl {
                 piStatement.close()
             }
 
-            // --- 4. Sumar 2 puntos de experiencia (LÓGICA CORREGIDA) ---
-            // Primero, obtenemos el ID de la casa del alumno
             val casaQuery = "SELECT casa_id FROM usuario WHERE id = ?"
             val casaStatement = connection.prepareStatement(casaQuery)
             casaStatement.setInt(1, pocimaData.creadorId)
@@ -138,27 +127,24 @@ object PocimasDaoImpl {
             val casaId = casaResult.getInt("casa_id")
             casaStatement.close()
 
-            // Ahora, hacemos dos UPDATES separados, que es más seguro
-            // Update 1: Sumar experiencia al alumno
             val updateUserQuery = "UPDATE usuario SET experiencia = experiencia + 2 WHERE id = ?"
             val updateUserStatement = connection.prepareStatement(updateUserQuery)
             updateUserStatement.setInt(1, pocimaData.creadorId)
             updateUserStatement.executeUpdate()
             updateUserStatement.close()
 
-            // Update 2: Sumar puntos a la casa
             val updateCasaQuery = "UPDATE casa SET puntos = puntos + 2 WHERE id = ?"
             val updateCasaStatement = connection.prepareStatement(updateCasaQuery)
             updateCasaStatement.setInt(1, casaId)
             updateCasaStatement.executeUpdate()
             updateCasaStatement.close()
 
-            connection.commit() // Confirmamos todos los cambios
+            connection.commit()
             return true
 
         } catch (e: SQLException) {
             println("Error en BD al crear poción: ${e.message}")
-            e.printStackTrace() // Esto te dará más detalles del error SQL en la consola del servidor
+            e.printStackTrace()
             connection.rollback()
             return false
         } finally {
@@ -168,7 +154,6 @@ object PocimasDaoImpl {
     }
 
 
-    // Función para que un profesor valide o rechace una poción
     fun validarPocion(pocionId: Int, nuevoEstado: Int): Boolean {
         val query = "UPDATE pocimas SET validada = ?, fecha_modificacion = NOW() WHERE id = ?"
         val connection = Conexion.getConnection() ?: return false
@@ -185,7 +170,6 @@ object PocimasDaoImpl {
         }
     }
 
-    // Función para que un admin borre una poción (borrado lógico)
     fun borrarPocion(pocionId: Int): Boolean {
         val query = "UPDATE pocimas SET fecha_borrado = NOW() WHERE id = ?"
         val connection = Conexion.getConnection() ?: return false

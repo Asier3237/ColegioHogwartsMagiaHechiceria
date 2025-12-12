@@ -1,5 +1,6 @@
 package com.example.hogwartsasiermartinez
 
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
@@ -7,13 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import com.example.hogwartsasiermartinez.Auxiliar.Sesion
-import com.example.hogwartsasiermartinez.databinding.ActivityAdminBinding
-import com.example.hogwartsasiermartinez.databinding.ActivityAlumnosBinding
 import com.example.hogwartsasiermartinez.databinding.ActivityProfesorBinding
-import com.google.android.material.navigation.NavigationView
 
 class ProfesorActivity : AppCompatActivity() {
 
@@ -25,6 +22,19 @@ class ProfesorActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityProfesorBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //aplico el color de la casa
+        if (Sesion.colorCasa.isNotEmpty()) {
+            try {
+                val color = Color.parseColor(Sesion.colorCasa)
+                binding.toolbar.setBackgroundColor(color)
+                window.statusBarColor = color
+                val headerView = binding.navView.getHeaderView(0)
+                headerView.setBackgroundColor(color)
+            } catch (e: IllegalArgumentException) {
+
+            }
+        }
 
         setSupportActionBar(binding.toolbar)
 
@@ -40,41 +50,45 @@ class ProfesorActivity : AppCompatActivity() {
 
         usuarioId = Sesion.usuarioId
 
-        val navView = findViewById<NavigationView>(R.id.navView)
-        val menu = navView.menu
-
+        val menu = binding.navView.menu
         menu.findItem(R.id.nav_usuarios).isVisible = false
-        menu.findItem(R.id.nav_ranking).isVisible = false
+        menu.findItem(R.id.nav_asignaturas).isVisible = false
+        menu.findItem(R.id.nav_pociones).isVisible = false
+        menu.findItem(R.id.nav_hechizos).isVisible = false
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, FragmentoAsignaturas())
-                .commit()
+            replaceFragment(FragmentoAsignaturas())
+            binding.bottomNavView.selectedItemId = R.id.nav_asignaturas
         }
 
         binding.navView.setNavigationItemSelectedListener { item ->
-            val fragment = when (item.itemId) {
-                R.id.nav_pociones -> FragmentoPociones()
-                R.id.nav_hechizos -> FragmentoHechizos()
-                R.id.nav_asignaturas -> FragmentoAsignaturas()
-                else -> null
+            when (item.itemId) {
+                R.id.nav_ranking -> {
+                    replaceFragment(FragmentoRankingCasas())
+                }
             }
-
-            fragment?.let {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, it)
-                    .commit()
-            }
-
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
 
+        binding.bottomNavView.setOnItemSelectedListener { item ->
+            val fragment = when (item.itemId) {
+                R.id.nav_asignaturas -> FragmentoAsignaturas()
+                R.id.nav_pociones -> FragmentoPociones()
+                R.id.nav_hechizos -> FragmentoHechizos()
+                else -> null
+            }
+            if (fragment != null) {
+                replaceFragment(fragment)
+                true
+            } else {
+                false
+            }
+        }
+
         val imgPerfil = binding.toolbar.findViewById<ImageView>(R.id.imgPerfil)
         imgPerfil.setOnClickListener {
-            val fragment = FragmentoPerfil().apply {
-                usuarioId = Sesion.usuarioId
-            }
+            val fragment = FragmentoPerfil()
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .addToBackStack(null)
@@ -84,6 +98,11 @@ class ProfesorActivity : AppCompatActivity() {
         val headerView = binding.navView.getHeaderView(0)
         val tvRol = headerView.findViewById<TextView>(R.id.tvRol)
         tvRol.text = "Profesor"
+    }
 
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
     }
 }

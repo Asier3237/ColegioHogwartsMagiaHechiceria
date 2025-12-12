@@ -18,7 +18,6 @@ import kotlin.getValue
 class activity_sombrero : AppCompatActivity() {
 
     lateinit var binding: ActivitySombreroBinding
-    private val viewModel : UsuarioViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +30,14 @@ class activity_sombrero : AppCompatActivity() {
             insets
         }
 
+        // ponemos la imagen principal del sombrero
         binding.imgSombrero.setImageResource(R.drawable.sombreroseleccionador)
 
+        // pillamos el id de la casa que hemos guardado en la sesión desde la pantalla anterior
         val casaId = Sesion.casaId
         Log.d("Registro", "CasaId = $casaId")
 
+        // según el id, elegimos el nombre y la foto de la casa
         val (nombreCasa, imagenResId) = when (casaId) {
             1 -> "Gryffindor" to R.drawable.gryffindor
             2 -> "Slytherin" to R.drawable.slytherin
