@@ -290,7 +290,7 @@ object UsuarioDaoImpl {
         FROM casa
         LEFT JOIN usuario ON casa.id = usuario.casa_id
         GROUP BY casa.id
-    """.trimIndent()
+        """.trimIndent()
 
         val connection = Conexion.getConnection()
         val occupancy = mutableMapOf<Int, Int>()

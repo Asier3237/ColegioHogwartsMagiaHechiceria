@@ -60,10 +60,7 @@ class FragmentoPerfil : Fragment() {
         }
 
         binding.btnCerrarSesion.setOnClickListener {
-            // creo un intent para volver a la pantalla de login
-            val intentVMain = Intent(activity, MainActivity::class.java)
-            startActivity(intentVMain)
-            // y muestro un mensaje para que el usuario sepa que ha salido
+            this.activity?.finish()
             Toast.makeText(requireContext(), "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show()
         }
 
